@@ -32,3 +32,14 @@ let count l predicat =
   in aux l
 ;;
 
+let merge_word a b =
+  let rec aux a b w = match (a,b) with
+    | x::u, y::v when x=y -> aux u v (x::w)
+    | x::u, y::v -> aux u v (Wildcare::w)
+    | x::u, _
+    | _, x::u -> failwith "Pas la même taille"
+    | _ -> List.rev w
+  in aux a b []
+;;
+
+
