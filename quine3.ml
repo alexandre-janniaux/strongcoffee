@@ -1,5 +1,5 @@
-#use "binword2.ml";;
-
+(*#use "binword.ml";;
+*)
 let quine accepted_words =
 
   let rec merge w words merged used =
@@ -15,7 +15,7 @@ let quine accepted_words =
   let rec step words accu matched prime = match words with
     | x::r ->
       let (merged, used) = merge x r [] [] in
-      if merged <> [] then ()
+      if merged <> [] then 
 	step r (merged@accu) (used@matched) prime
       else
 	step r accu matched (x::prime)
