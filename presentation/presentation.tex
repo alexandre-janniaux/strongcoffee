@@ -12,6 +12,7 @@
 \usepackage{wrapfig}
 
 \newcommand{\tick}{\ding{52}}
+\newcommand{\lnon}{\overline}
 
 \graphicspath{ {./images/} }
 
@@ -35,8 +36,8 @@
 \begin{frame}
   \frametitle{Circuits logiques et fonctions combinatoires}
   \begin{figure}[p]
-    \includegraphics[width=8cm]{circuit_logique.png}
-    \caption{Exemple de circuit logique}
+    \includegraphics[width=8cm]{circuit_logique_pla.png}
+    \caption{Exemple de circuit logique PLA ET/OU}
     \label{fig:circ1}
   \end{figure}
   
@@ -48,11 +49,11 @@
 
   \textbf{Notations : }
   \begin{itemize}
-  \item Mintermes/Produits : $(1,0,1,0,1,1) = \overline{101011}^{2} = 43$
-  \item Disjonction des mintermes $a_i$ : $f = \sum m(a_1, \cdots, a_n)$
+  \item Mintermes : $A\lnon{B}C\lnon{D}EF = (1,0,1,0,1,1) = \overline{101011}^{2} = 43$
+  \item DNF : $a_i$ : $f = \sum m(a_1, \cdots, a_n)$
   \item Terme simplifié : $(1,\_,0) = A\overline{C} = A(B+\overline{B})\overline{C}$
-  \item ON-set : $\mathcal{O} = f^{-1}(\{1\})$
-  \item DC-set : $\mathcal{D} = f^{-1}(\{\_\})$ ``Don't care''
+  %\item ON-set : $\mathcal{O} = f^{-1}(\{1\}) = \ensemble{(x_1,\cdots, x_n) \mid f=1}$
+  %\item DC-set : $\mathcal{D} = f^{-1}(\{\_\})$ ``Don't care''
   \end{itemize}
   
 

@@ -1,6 +1,5 @@
 (*#use "cover_lib.ml";;*)
 
-(*type cube_t = bool array array;;*)
 type literal_t = bool list;;
 type cube_t = literal_t list;;
 type sop_t = cube_t list;;
@@ -10,35 +9,10 @@ type primitive =
 | Cube of cube_t
 | Sop of sop_t;;
 
+(* douple pipe operator *)
 let (|>>) (a,b) f =
   f a b
 ;;
-
-(*
-let cube_complement cube =
-  let n = Array.length cube in
-  let new_cube = Array.make n 
-  for i=0 to Array.length cube -1 do
-    for j=0 to Array.length cube.(i) -1 do
-      cube.(i).(j) <- not cube.(i).(j)
-    done
-  done
-;;
-
-let cube_intersect c1 c2 =
-  let n = Array.length c1 in
-  assert n = Array.length c2;
-  let new_cube = Array.make n false in
-  for i=0 to n-1 do
-    let m = Array.length c1.(i) in
-    assert m = Array.length c2.(i);
-    for j=0 to m-1 do
-      new_cube.(i).(i) <- c1.(i).(j) && c2.(i).(j)
-    done
-  done;
-  new_cube
-;;
-*)
 
 (* Loi de De Morgan appliqué au produit des littéraux *)
 let cube_complement (cube:cube_t) : sop_t =
@@ -119,69 +93,105 @@ let cube_sharp (s:cube_t) (t:cube_t) : sop_t =
   else sop_intersect [s] (cube_complement t)
 ;;
 
-
-(* KISS : on choisi la premiere variable qu'on peut prendre *)
-let partition_variable (sop:sop_t) =
-  let make_partition x =
-    let n = (x|> List.filter ((=)true) |> List.length)/2 in
-    let rec aux i x accu1 accu2 =
-      match x with
-      | true::r when i <= n -> aux (i+1) r (true::accu1) (false::accu2)
-      | true::r -> aux (i+1) r (false::accu1) (true::accu2)
-      | false::r when i <= n -> aux i r (false::accu1) (true::accu2)
-      | false::r -> aux i r (true::accu1) (false::accu2)
-      | _ -> List.rev accu1, List.rev accu2
-    in aux 0 x [] []
-  in
-  
-  let rec aux sop var accu1 accu2 =
-    match sop with
-    | x::r ->      
-      if var=false && x |> List.filter ((=)true) |> List.length >= 2 then
-	let (x1, x2) = make_partition x in
-	aux r true (x1::accu1) (x2::accu2)
-      else
-	((x |> List.map (fun y -> true))::accu1, (x |> List.map (fun y -> true))::accu2) |>> (* Les autres variables peuvent prendre des valeurs quelconques *)
-	    aux r var
-    | _ -> List.rev accu1, List.rev accu2
-  in aux sop false [] []
+let make_universe (literal:literal_t) : literal_t =
+    literal |> List.map (fun x -> true)
 ;;
+
+let make_null (literal:literal_t) : literal_t =
+    literal |> List.map (fun x -> false)
+;;
+
+let choose_splitting_variable sop =
+  let (_, var) =
+    (* iterate over all cubes to find the variable *)
+    sop |> List.fold_left (fun (m,var) cube ->
+      (* iterate over all variable and build the optimal one recursively *)
+      cube |> List.fold_left (fun (m,var) literal ->
+	let n = literal |> List.filter ((=)false) |> List.length in
+	if m < n then (* if we found a new optimal var, resets the former cube
+			 and concatenates it with the new one *)
+	  (n, (make_null literal)::(List.map make_universe var))
+	else (* otherwise, clear the variable and push it at the top *)
+	  (m, (make_universe literal)::var)
+      ) (-1, []) (* cube *)
+    ) (-1, []) (* sop *)
+  in List.rev var (* cube has been built reversly*)
+;;
+
+
+
+(*   make_partition solves the partition problem with the 
+ *   number of covered variable as as cost function 
+ *)
+let make_partition (sop:sop_t) (var:cube_t) : (cube_t*cube_t) =
+  let compare =
+    sop |> List.map (fun cube ->
+      (cube, var) |>> List.fold_left (fun a x y ->
+	if List.filter ((=)0) var = [] then a
+	else x
+       ) [])
+  in 
+	  
+  ([],[])
+;;
+
+  (*
+  in let split_variable var sop =
+     (* iterate over all cubes *)
+       sop |> List.fold_left (fun a cube ->
+	 (* iterate over all variable *)
+	 cu
+     in
+       
+  in choose_splitting_variable sop
+;;
+  *)
+  
 
 let cube_cofactor (c1:cube_t) (c2:cube_t) =
   if cube_intersect c1 c2 |> cube_is_empty then
     c1 |> List.map (fun x ->
       x|> List.map (fun y -> false
-      )
-    )
+      ))
   else
     (c1,c2) |>> List.map2 (fun x y ->
       (x,y) |>> List.map2 (fun a b ->
 	a && (not b)
-       )
-     )
+       ))
 ;;
 
 let sop_cofactor (sop:sop_t) (c:cube_t) =
   sop |> List.map (fun cube ->
     cube_cofactor cube c)
-;; 
+;;
 
-
+(*
 let rec sop_complement (sop:sop_t) =
   match sop with
   | [x] -> cube_complement x
   | [] -> []
   | _ ->
-    let (p1, p2) = partition_variable sop in
+    let (p1, p2) = partition sop in
     let cof1, cof2 = shannon_cofactor sop p1, shannon_cofactor sop p2 in
     sop_union (sop_intersection p1 (sop_complement cof1)) (sop_intersection p2 (sop_complement cof2))
-;;
+  ;;*)
 
 (*
 let sop_union sop1 sop2 = 
 ;;
 
+*)
 
+(*
+let sop_expand (sop:sop_t) (off_set:cube_t list) =
+
+;;
+*)
+(*
+let sop_reduce (sop:sop_t) (dc_set:cube_t list) =
+;;
+*)
+(*
 
 
 let minterm_intersect min1 min2 = 
@@ -225,3 +235,4 @@ let espresso_mv on_set dc_set =
       
     let new_cover = aux cover in
 
+*)
