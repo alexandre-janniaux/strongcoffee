@@ -1,4 +1,6 @@
 open OUnit
+open MultipleValued
+open Tautology
 open Espresso
 
 
@@ -181,6 +183,6 @@ let test_fixture = "Espresso" >:::
   ]
 
 let _ =
-  run_test_tt ~verbose:true test_fixture
+  run_test_tt (*~verbose:true*) test_fixture
 
 ;;
