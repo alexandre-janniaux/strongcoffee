@@ -1,7 +1,8 @@
 open OUnit
 open MultipleValued
-open Tautology
 open Espresso
+open Partition
+open Tautology
 
 
 (* This function and sop_contains must be tested for validity *)
@@ -154,6 +155,21 @@ let test_essential () =
   let essentials = [
   ] in
   assert_cover_is essentials (sop_essentials on_set [])
+
+let test_partition () = 
+  let sop = [ 
+    [[false;true;false]; [true;false;false]]; 
+    [[false;false;true]; [false;true;false]] ] 
+  in
+  let c1,c2 = partition sop in
+  assert_equal 
+    ~msg:"L'intersection deux à deux des éléments d'une partition est vide"
+    true 
+    (cube_intersect c1 c2 |> cube_is_empty);
+  assert_equal 
+    ~msg:"L'union des élements d'une partition est une tautologie"
+    true 
+    (is_tautology [c1;c2]) (* TODO : other check (taugology use partition) *)
       
     
 let test_fixture = "Espresso" >:::
@@ -179,7 +195,8 @@ let test_fixture = "Espresso" >:::
     "cube_sharp" >:: test_cube_sharp;
 
 
-    "is_not_tautology_col" >:: test_is_not_tautology_col
+    "is_not_tautology_col" >:: test_is_not_tautology_col;
+    "partition" >:: test_partition
   ]
 
 let _ =

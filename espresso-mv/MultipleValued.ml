@@ -32,6 +32,13 @@ let list_count f l =
 let list_sum l =
   List.fold_left (fun a x -> x+a) 0 l
 
+let list_enumerate f (l:'a list) = 
+  let rec aux l i = 
+    match l with
+    | x::r -> f i x; aux r (i+1)
+    | _ -> ()
+  in aux l 0
+
 
 let list_map_n (f:'a list -> 'b) (l:'a list list) : 'b list =
   let rec depile l = (List.map List.hd l, List.map List.tl l |> List.filter ((<>)[])) in
@@ -57,10 +64,14 @@ let cube_is_empty (cube:cube_t) : bool =
 let sop_is_empty (sop:sop_t) : bool =
   if sop = [] then true
   else not @@ List.exists (fun x -> not @@ cube_is_empty x) sop
-    
+
+
+let literal_is_universal(x:literal_t) : bool =
+  not (List.exists ((=)false) x)
+
 
 let cube_is_universal (cube:cube_t) : bool =
-  not (List.exists (List.exists ((=)false)) cube)
+  not (List.exists (fun x -> not (literal_is_universal x)) cube)
     
     
 let sop_is_universal (sop:sop_t) : bool =
@@ -123,6 +134,12 @@ let cube_supercube (c1:cube_t) (c2:cube_t) : cube_t =
   List.map2 literal_supercube c1 c2
 
 
+let sop_supercube (sop:sop_t) : cube_t = match sop with
+| [x] -> x
+| x::t -> List.fold_left cube_supercube x t
+| [] -> []
+
+
 let literal_contains (x_in:literal_t) (x:literal_t) : bool =
   not(List.exists2 (fun x y -> not x && y) x_in x)
 
@@ -153,7 +170,7 @@ let cube_consensus (cube1:cube_t) (cube2:cube_t) : sop_t =
 
 
 let sop_consensus (sop1:sop_t) (sop2:sop_t) : sop_t =
-  sop1 |> List.map (fun c1 ->
-    List.map (cube_consensus c1) sop2) |>
-      List.flatten |>
-	  List.flatten (* TODO: merge ? *)
+  sop1 |> 
+  List.map (fun c1 -> List.map (cube_consensus c1) sop2) |>
+  List.flatten |>
+  List.flatten (* TODO: merge ? *)

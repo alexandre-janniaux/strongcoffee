@@ -30,3 +30,12 @@ let rec is_tautology (sop:sop_t) : bool =
 (* TODO CHECK : intersection nécessaire ? *)
 
 
+let find_tautology (sop:sop_t) : sop_t =
+  let rec aux sop accu =
+  if is_tautology_row sop then list_union sop accu
+  else if is_not_tautology_col sop then accu
+  else
+    let (c1,c2) = partition sop in
+    let (f1,f2) = sop_cofactor sop c1, sop_cofactor sop c2 in 
+    aux f1 (aux f2 accu)
+  in aux sop []

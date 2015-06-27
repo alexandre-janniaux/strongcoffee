@@ -7,7 +7,9 @@ SOURCES = \
 	espresso.ml \
 	expand.ml \
   irredundant.ml \
-	tests.ml 
+  reduce.ml \
+  MVDebug.ml \
+	tests/tests.ml  
 
 PACKS = unix oUnit
 
