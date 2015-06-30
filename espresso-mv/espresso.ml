@@ -11,7 +11,19 @@ let sop_contains (sop:sop_t) (cube:cube_t) : bool =
 let sop_merge_expensive (sop1:sop_t) (sop2:sop_t) =
   []
 
+let simple_expand (sop:sop_t) = 
+  let rec aux sop accu = match sop with
+    | [] -> accu
+    | x::r -> begin
+        try 
+          let y = List.find (fun y -> cube_distance x y = 1) r in 
+          aux r ((cube_supercube x y)::accu)
+        with Not_found -> aux r (x::accu)
+      end
+  in aux sop []
     
+         
+
 let sop_merge_fast (c1:cube_t) (sop1:sop_t) (c2:cube_t) (sop2:sop_t) =
   (*let merge set (accu,rest) cube = 
     if is_tautology (sop_cofactor set cube) then (* cube appartient à sop2 *)
@@ -38,6 +50,12 @@ let one_var_dependance (cube:cube_t) : bool =
   |> list_count ((=)true) 
      = 1 
       
+let one_var_complement (cube:cube_t) : cube_t = 
+  List.map (fun var -> 
+    if List.exists ((=)false) var then
+      literal_complement var
+    else var
+  ) cube
 
 let rec sop_complement (sop:sop_t) =
   match sop with
@@ -46,37 +64,38 @@ let rec sop_complement (sop:sop_t) =
       cube_complement cube
   | [] -> []
   | _ ->
-    (*print_newline();
+    print_newline();
     print_string "**** DEBUG COMPLEMENT ****\n";
     print_sop sop;
     print_string "vect_or_col : ";
     print_cube (vect_or_col sop);
     print_string "\nvect_weakly_unate : ";
-    print_cube (vect_weakly_unate sop);*)
+    print_cube (vect_weakly_unate sop);
     let vect_or = vect_or_col sop in
     if sop_is_empty sop then [List.map make_universe (List.hd sop)]
+    else if sop_is_universal sop then [List.map make_empty (List.hd sop)]
     else if List.exists (List.exists ((=)false)) vect_or then
       list_union (cube_complement vect_or) (sop_complement (sop_cofactor sop vect_or))
     else begin
       let univars, other = List.partition one_var_dependance sop in
       if List.length univars <> 0 then
         let f' = sop_complement other in
-        List.fold_left (fun a x -> sop_intersect a (cube_complement x)) f' univars
+        List.fold_left (fun a x -> sop_intersect a [one_var_complement x]) f' univars
       else begin
         let (p1, p2) = partition sop in
-        let cof1, cof2 = sop_cofactor sop p1 |> sop_filter2 (* |> sop_filter_double*), 
-                         sop_cofactor sop p2 |> sop_filter2(*|> sop_filter |> sop_filter_double*) in
-        (*print_string "\nPARTITION : \n";
+        let cof1, cof2 = sop_cofactor sop p1 |> simple_expand |> sop_filter2 (* |> sop_filter_double*), 
+                         sop_cofactor sop p2 |> simple_expand |> sop_filter2(*|> sop_filter |> sop_filter_double*) in
+        print_string "\nPARTITION : \n";
         print_cube p1; print_newline();
         print_cube p2; print_newline();
         print_string "= COF1 : \n";
         print_sop cof1;
         print_string "= COF2 : \n";
-        print_sop cof2;*)
+        print_sop cof2;
         let result = sop_merge_fast p1 (sop_complement cof1) p2 (sop_complement cof2) in
-        (*print_string "result : \n";
+        print_string "result : \n";
         print_sop result;
-        print_string "\n**** END ****\n\n";*)
+        print_string "\n**** END ****\n\n";
         result
 
       end

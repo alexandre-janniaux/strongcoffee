@@ -11,11 +11,22 @@ let _ =
     "11 10 11" ::
     "01 10 10" ::
     "10 01 10" ::
-    (*"11 01 01" ::
+    "11 01 01" ::
     "01 01 11" ::
-    "01 11 11" ::*)
+    "01 11 11" ::
     [])
   in
+
+  let cover2 = List.map cube_from_text (
+    "111 110" ::
+    "011 101" ::
+    "011 001" ::
+    [])
+  in
+  print_sop cover2;
+  print_cube (vect_weakly_unate cover2);
+  (*
+  print_newline ();
   print_sop cover;
   print_cube (vect_or_col cover);
   print_newline();
@@ -28,9 +39,9 @@ let _ =
   print_string "intersect : \n";
   let inter = sop_intersect cover off_cover in
   print_sop inter;
-  if is_tautology (off_cover@cover) then print_string "tautology" else print_string "nontoto"
+  if is_tautology (cover) then print_string "tautology" else print_string "nontoto"
 
-
+*)
 (*;
   let is_tauto = if is_tautology cover then "est une tautologie" else "n'est pas une tautologie" in
   let cube = cube_from_text "10 01 10" in
