@@ -38,13 +38,6 @@ let sop_merge_fast (c1:cube_t) (sop1:sop_t) (c2:cube_t) (sop2:sop_t) =
     | [] -> accu
   in aux set []
 
-let vect_or_col (sop:sop_t) : cube_t = 
-  list_map_n ( 
-    list_map_n (
-      List.exists ((=)true)
-    )
-  ) sop
-
 let one_var_dependance (cube:cube_t) : bool = 
   List.map (List.exists ((=)false)) cube 
   |> list_count ((=)true) 
@@ -57,10 +50,19 @@ let one_var_complement (cube:cube_t) : cube_t =
     else var
   ) cube
 
+let extract_1_col (cube:cube_t) : cube_t = 
+  let rec aux cube accu = 
+    match cube with 
+    | x::r -> 
+      if List.exists ((=)false) x then 
+        List.rev accu @ (x ::(List.map make_universe r))
+      else aux r (x::accu)
+    | _ -> List.rev accu
+  in aux cube []
+
 let rec sop_complement (sop:sop_t) =
   match sop with
   | [cube] -> 
-      print_cube cube;
       cube_complement cube
   | [] -> []
   | _ ->
@@ -71,35 +73,39 @@ let rec sop_complement (sop:sop_t) =
     print_cube (vect_or_col sop);
     print_string "\nvect_weakly_unate : ";
     print_cube (vect_weakly_unate sop);
-    let vect_or = vect_or_col sop in
     if sop_is_empty sop then [List.map make_universe (List.hd sop)]
     else if sop_is_universal sop then [List.map make_empty (List.hd sop)]
-    else if List.exists (List.exists ((=)false)) vect_or then
-      list_union (cube_complement vect_or) (sop_complement (sop_cofactor sop vect_or))
-    else begin
-      let univars, other = List.partition one_var_dependance sop in
-      if List.length univars <> 0 then
-        let f' = sop_complement other in
-        List.fold_left (fun a x -> sop_intersect a [one_var_complement x]) f' univars
-      else begin
-        let (p1, p2) = partition sop in
-        let cof1, cof2 = sop_cofactor sop p1 |> simple_expand |> sop_filter2 (* |> sop_filter_double*), 
-                         sop_cofactor sop p2 |> simple_expand |> sop_filter2(*|> sop_filter |> sop_filter_double*) in
-        print_string "\nPARTITION : \n";
-        print_cube p1; print_newline();
-        print_cube p2; print_newline();
-        print_string "= COF1 : \n";
-        print_sop cof1;
-        print_string "= COF2 : \n";
-        print_sop cof2;
-        let result = sop_merge_fast p1 (sop_complement cof1) p2 (sop_complement cof2) in
-        print_string "result : \n";
-        print_sop result;
-        print_string "\n**** END ****\n\n";
-        result
+    else 
+      let vect_or = extract_1_col (vect_or_col sop) in
+      if List.exists (List.exists ((=)false)) vect_or then
+        begin print_string "\n Go extract 1\n";
+        list_union (cube_complement vect_or) (sop_complement (sop_cofactor sop vect_or))
+        end
+      else 
+        let univars, other = List.partition one_var_dependance sop in
+        if List.length univars <> 0 then 
+          begin print_string "\ngo univar !\n";
+          let f' = sop_complement other in
+          List.fold_left (fun a x -> sop_intersect a [one_var_complement x]) f' univars
+            end
+        else begin
+          let (p1, p2) = partition sop in
+          let cof1, cof2 = sop_cofactor sop p1 |> simple_expand |> sop_filter |> sop_filter_double, 
+                           sop_cofactor sop p2 |> simple_expand |> sop_filter |> sop_filter_double in
+          print_string "\nPARTITION : \n";
+          print_cube p1; print_newline();
+          print_cube p2; print_newline();
+          print_string "= COF1 : \n";
+          print_sop cof1;
+          print_string "= COF2 : \n";
+          print_sop cof2;
+          let result = sop_merge_fast p1 (sop_complement cof1) p2 (sop_complement cof2) in
+          print_string "result : \n";
+          print_sop result;
+          print_string "\n**** END ****\n\n";
+          result
 
-      end
-    end
+        end
 
 			     
 

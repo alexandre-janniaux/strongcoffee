@@ -8,31 +8,26 @@ open Tautology;;
 
 let _ = 
   let cover = List.map cube_from_text (
-    "11 10 11" ::
-    "01 10 10" ::
-    "10 01 10" ::
-    "11 01 01" ::
-    "01 01 11" ::
-    "01 11 11" ::
+    "11 10 11 10 011 10001" ::
+    "01 10 10 01 110 10001" ::
+    "10 01 10 01 101 10011" ::
+    "11 01 01 11 100 10111" ::
+    "01 01 11 11 101 10110" ::
+    "01 11 11 01 011 01110" ::
     [])
   in
 
   let cover2 = List.map cube_from_text (
-    "111 110" ::
-    "011 101" ::
-    "011 001" ::
+    "100 100 100" ::
     [])
   in
+  print_newline ();
   print_sop cover2;
-  print_cube (vect_weakly_unate cover2);
-  (*
-  print_newline ();
-  print_sop cover;
-  print_cube (vect_or_col cover);
+  print_cube (vect_or_col cover2);
   print_newline();
-  print_cube (vect_weakly_unate cover);
+  print_cube (vect_weakly_unate cover2);
   print_newline ();
-  let off_cover = sop_complement cover in
+  let off_cover = sop_complement cover2 in
   print_string "off_set : ";
   print_newline();
   print_sop off_cover;
@@ -41,7 +36,6 @@ let _ =
   print_sop inter;
   if is_tautology (cover) then print_string "tautology" else print_string "nontoto"
 
-*)
 (*;
   let is_tauto = if is_tautology cover then "est une tautologie" else "n'est pas une tautologie" in
   let cube = cube_from_text "10 01 10" in
