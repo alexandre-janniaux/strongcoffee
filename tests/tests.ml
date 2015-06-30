@@ -3,6 +3,7 @@ open MultipleValued
 open Espresso
 open Partition
 open Tautology
+open MVDebug
 
 
 (* This function and sop_contains must be tested for validity *)
@@ -119,14 +120,11 @@ let test_cube_contains () =
     
 let test_is_not_tautology_col () =
   let sop =
-    [
+    List.map cube_from_text 
       [
-	[true;false;true]; [true;false;false]
-      ];
-      [
-	[true;false;false]; [false;false;true]
+        "101 100";
+        "100 001";
       ]
-    ]
   in
   assert_equal true (is_not_tautology_col sop)
     

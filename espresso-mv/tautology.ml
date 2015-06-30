@@ -1,3 +1,4 @@
+open Format
 open MultipleValued
 open Partition
 
@@ -15,6 +16,17 @@ let is_not_tautology_col (sop:sop_t) : bool =
     List.exists ((=)true)
   )
 
+let vect_weakly_unate (sop:sop_t) : cube_t = 
+  list_map_n (fun var_list ->
+    list_map_n (fun val_list -> 
+      fst @@ List.fold_left 
+               (fun (a,b) x -> 
+                  if b || (x && a) then (false, true)
+                  else (x||a,false))
+               (false, false) val_list) 
+      var_list)
+    sop  
+
 
 (* 
  * Check if sop is a tautology (i.e = 1 for any evaluation)
@@ -23,10 +35,12 @@ let is_not_tautology_col (sop:sop_t) : bool =
 let rec is_tautology (sop:sop_t) : bool = 
   if is_tautology_row sop then true
   else if is_not_tautology_col sop then false
+  else if List.exists (List.exists ((=)true)) (vect_weakly_unate sop) then false
   else
     let (c1,c2) = partition sop in
-    let (f1,f2) = sop_cofactor sop c1, sop_cofactor sop c2 in
-    is_tautology (sop_intersect f1 [c1]) && is_tautology (sop_intersect f2 [c2])
+    let (f1,f2) = sop_cofactor sop c1 |> sop_filter, 
+                  sop_cofactor sop c2 |> sop_filter in
+    is_tautology f1 && is_tautology f2 
 (* TODO CHECK : intersection nécessaire ? *)
 
 

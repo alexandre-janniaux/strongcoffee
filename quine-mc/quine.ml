@@ -1,4 +1,4 @@
-open binword;;
+open Binword
 
 let quine accepted_words =
 

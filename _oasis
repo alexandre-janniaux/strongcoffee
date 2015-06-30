@@ -1,0 +1,36 @@
+Name: espresso-mv
+Version: 0.1
+Synopsis: Multiple-Valued logic function minimizer
+Authors: Alexandre JANNIAUX <alexandre.janniaux@gmail.com>
+License: GPL 
+
+Description: Rudell's work implementation in ocaml.
+
+OASISFormat: 0.4
+BuildTools: ocamlbuild
+Plugins: META (0.4), DevFiles (0.4)
+
+
+Library "espresso"
+  Path: espresso-mv
+  Modules: MultipleValued, Espresso, Tautology, Expand, Irredundant, Partition, MVDebug
+  BuildDepends: str
+
+
+Executable "unittests"
+  Path: tests
+  MainIs: tests.ml
+  BuildDepends: unix, oUnit, espresso
+  Install: false
+
+Executable "sandbox"
+  Path: sandbox
+  MainIs: sandbox.ml
+  BuildDepends: espresso, unix, str
+  Install: false
+
+Test "unittests"
+  Run$: flag(tests) 
+  TestTools: unittests
+  Command: $unittests
+  WorkingDirectory: tests

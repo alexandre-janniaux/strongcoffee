@@ -1,3 +1,4 @@
+open Format 
 
 type literal_t = bool list
 type cube_t = literal_t list
@@ -90,7 +91,7 @@ let cube_cofactor (c1:cube_t) (c2:cube_t) =
     List.map (List.map (fun y -> false)) c1
     else*) 
   List.map2 (
-    List.map2 (fun a b -> a && (not b)))
+    List.map2 (fun a b -> a || (not b)))
     c1 c2
     
     
@@ -109,21 +110,6 @@ let cube_complement (cube:cube_t) : sop_t =
     | x::r -> aux r (previous@[make_universe x]) ((previous@[literal_complement x]@(List.map make_universe r))::accu)
     | _ -> accu
   in aux cube [] []
-
-
-let literal_intersect (x1:literal_t) (x2:literal_t) : literal_t =
-  List.map2 (fun x y -> x && y) x1 x2
-
-    
-let cube_intersect (c1:cube_t) (c2:cube_t) : cube_t =
-  List.map2 literal_intersect c1 c2
-
-    
-(* (\sum c_i)*(\sum c_j) *)
-let sop_intersect (s1:sop_t) (s2:sop_t) : sop_t = 
-  List.map (fun c1 ->
-    List.map (cube_intersect c1) s2
-  ) s1 |> List.flatten |> List.filter (fun x -> not (cube_is_empty x))
 
 
 let literal_supercube (x1:literal_t) (x2:literal_t) : literal_t =
@@ -148,14 +134,55 @@ let cube_contains (container:cube_t) (containee:cube_t) : bool =
   not(List.exists2 literal_contains container containee)
     
 
+let sop_filter2 set =
+  let rec aux set accu = match set with
+  | x::r -> if List.exists (fun y -> cube_contains y x) (r@accu) then aux r accu else aux r (x::accu)
+  | [] -> accu
+  in aux set []
+
+
+let sop_filter (sop:sop_t) : sop_t = 
+  let rec aux sop accu = match sop with
+    | [x] when accu = [] -> [x]
+    | x::r -> 
+      if cube_is_empty x then aux r accu 
+      else if cube_is_universal x then [x]
+      else aux r (x::accu)
+    | _ -> List.rev accu
+  in aux sop []
+
+let sop_filter_double (sop:sop_t) : sop_t =
+  let rec aux sop accu = match sop with 
+    | x::r -> if List.mem x r then aux r accu else aux r (x::accu)
+    | [] -> accu
+  in aux sop []
+
+let literal_intersect (x1:literal_t) (x2:literal_t) : literal_t =
+  List.map2 (fun x y -> x && y) x1 x2
+
+    
+let cube_intersect (c1:cube_t) (c2:cube_t) : cube_t =
+  List.map2 literal_intersect c1 c2
+
+    
+(* (\sum c_i)*(\sum c_j) *)
+let sop_intersect (s1:sop_t) (s2:sop_t) : sop_t = 
+  List.map (fun c1 ->
+    List.map (cube_intersect c1) s2
+  ) s1 |> List.flatten |> sop_filter |> sop_filter_double |> sop_filter2
+
     
 let cube_distance (c1:cube_t) (c2:cube_t) : int =
   let r = cube_intersect c1 c2 in
-  List.fold_left (fun a x ->
-    if literal_is_empty x then a+1 else a)
-    0 r
+  list_count literal_is_empty r
 
     
+let cube_diff (c1:cube_t) (c2:cube_t) : cube_t = 
+  List.map2 
+    (List.map2 (fun x y -> x && (not y)))
+    c1 c2
+
+
 let cube_sharp (s:cube_t) (t:cube_t) : sop_t =
   if cube_intersect s t |> cube_is_empty then [s]
   else sop_intersect [s] (cube_complement t)
@@ -174,3 +201,4 @@ let sop_consensus (sop1:sop_t) (sop2:sop_t) : sop_t =
   List.map (fun c1 -> List.map (cube_consensus c1) sop2) |>
   List.flatten |>
   List.flatten (* TODO: merge ? *)
+
