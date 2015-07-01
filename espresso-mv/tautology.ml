@@ -60,3 +60,8 @@ let find_tautology (sop:sop_t) : sop_t =
     let (f1,f2) = sop_cofactor sop c1, sop_cofactor sop c2 in 
     aux f1 (aux f2 accu)
   in aux sop []
+
+
+let sop_contains (sop:sop_t) (cube:cube_t) : bool =
+  is_tautology (sop_cofactor sop cube) (* TODO: first linear cube_contains check ? *)
+

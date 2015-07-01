@@ -1,33 +1,99 @@
-
 open MultipleValued
 
+let cube_lower cube lower = 
+  List.map2 
+    (List.map2 (fun x y -> x && (not y)))
+    cube lower 
+
+let cube_upper cube upper =
+  List.map2
+    (List.map2 (fun x y -> x || not(y)))
+    cube upper
+
+
 (*
- * Return (adjacent_cubes, others)
+ *    Step (1) of the expand algorithm
+ *    Return (adjacent_cubes, others)
  *)
-let determine_adjacent_cubes (cube:cube_t) (set:sop_t) =
+let determine_adjacent_cubes cube set =
   List.partition (fun e -> cube_distance e cube = 1) set
 
-let remove_essential_parts (set:sop_t) (off_set:sop_t) (overexpanded:cube_t) (free:cube_t) (f_raise:cube_t) =  
-  let rec aux set off_set overexpanded free = match set with
-    | cube::r -> 
-      let (conflict_set, new_off_set) = determine_adjacent_cubes cube off_set in
-      let new_free = List.fold_left (fun a e -> cube_diff a (cube_diff e cube)) free conflict_set in
-      aux r new_off_set overexpanded new_free
-    | [] -> (off_set, free, overexpanded)
-  in aux set off_set overexpanded free
+let remove_essential_parts cube off_set free =  
+  let (conflict_set, new_off_set) = determine_adjacent_cubes cube off_set in
+  let free_cube = List.fold_left (fun a e -> cube_lower a (cube_diff e cube)) free conflict_set in
+  let raise_cube = List.fold_left (fun a e -> cube_upper a e) cube conflict_set in
+  let overexpanded = cube_supercube free_cube raise_cube in
+  let final_off_set = List.filter (fun x -> cube_distance x overexpanded = 0) new_off_set in
+  final_off_set, free_cube, raise_cube
 
-let remove_feasibly_covered (on_set:sop_t) (off_set:sop_t) (cube:cube_t) (free:cube_t) =
-  let rec aux set accu cube free = match set with
-    | f::r -> 
-      let p = cube_supercube cube f in
-      if not(List.exists (fun x -> cube_distance p x >= 1) off_set) then
-        aux r accu p free(* TODO: Remove free part *)
-      else aux r (f::accu) cube free
-    | [] -> accu, cube 
-  in aux on_set [] cube
 
-let sop_expand (set:sop_t) (off_set:sop_t) =
-  set
+
+
+let remove_feasibly_covered on_set off_set cube raise_cube free =
+  let rec aux cube free_cube raise_cube =
+    let covered_cubes, others = 
+      List.partition (fun f -> 
+        let p = cube_supercube cube f in 
+        not(List.exists (fun x -> cube_distance p x >= 1) off_set))
+        on_set 
+    in
+
+    let rec score_attrib set accu = 
+      match set with
+      | x::r -> 
+        let supercube = cube_supercube cube x in
+        let score = list_count ((=)true) (List.map (fun y -> cube_contains supercube y) covered_cubes) in 
+        score_attrib r ((x,score)::accu)
+      | [] -> accu
+    in
+
+    let map_score = score_attrib on_set [] |> List.sort (fun (_,score1) (_,score2) -> compare score1 score2)in
+    if map_score = [] then
+      off_set, free_cube, raise_cube
+    else begin
+      let best = fst(List.hd map_score) in
+      let free_cube = cube_lower free_cube best in
+      let raise_cube = cube_upper raise_cube best in
+      let new_cube = cube_supercube best cube in
+      aux new_cube free_cube raise_cube  
+    end
+  in aux cube free raise_cube
+
+  
+let expand_most_frequent free_cube set =
+  free_cube
+
+let expand_minimum_covering off_set raise_cube free_cube = 
+  
+  raise_cube
+
+let expand_minimum_covering_random off_set raise_cube free_cube = 
+  free_cube
+
+let cube_expand cube on_set off_set = 
+  let free_cube = List.map (List.map not) cube in
+
+  (* STEP 1 : determination of essential parts *)
+  let off_set, free_cube, raise_cube = 
+    remove_essential_parts cube off_set free_cube in
+
+  (* STEP 2 : Detection of feasibly covered cubes *)
+  let off_set, free_cube, raise_cube = 
+    remove_feasibly_covered on_set off_set cube raise_cube free_cube in
+
+  (* STEP 3 : Finding the largest prime implicant covering the cube *)
+  let free_cube = expand_most_frequent free_cube on_set in
+
+  (* STEP 4 : Expansion via the minimum covering problem *)
+  free_cube
+
+
+let sop_expand set off_set =
+  let rec aux set accu = 
+    match set with
+    | [] -> accu
+    | cube::r -> aux r ((cube_expand cube set off_set)::accu)
+  in aux set []
 		      
 		      
 (*let sop_expand_single (on_set:sop_t) (off_set:sop_t) (cube:cube_t) =

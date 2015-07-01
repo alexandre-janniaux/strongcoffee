@@ -72,38 +72,3 @@ let partition (sop:sop_t) : cube_t*cube_t =
     (x1,x2)
     
 
-(* wrong *)
-(*let remove_essentials matrix =
-  let rec aux matrix essential accu = match matrix with
-  | l::r -> 
-      if list_count (fun (v,e) -> v) l = 1  then begin
-        let project rows = List.map (fun l' ->
-          List.rev @@ List.fold_left2 (fun accu x y -> 
-            if x then y::accu else accu)   (*projection*)
-            [] l l')
-          rows
-        in
-        let m' = project matrix and accu' = project accu in
-        let _,e = List.find (fun (v,e) -> v) in
-        aux m' (e::essential) accu'
-      end else 
-        aux r essential l::accu
-  | _ -> essential, List.rev accu
-  in aux matrix [] []*)
-(*
-let remove_essentials matrix =
-  let rec aux matrix essential accu = match matrix with
-  | l::r -> 
-      if list_count (fun (v,e) -> v) l = 1  then begin
-        
-  | _ -> essential, List.rev accu
-  in aux matrix [] []
-    
-let remove_row_dominance matrix =
-  let rec 
-
-
-let remove_colum_dominance (matrix) = 
-*)
-let solve_minimum_cover (matrix:bool*int list list) = 
-  []

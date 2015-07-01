@@ -4,6 +4,7 @@ open MVDebug;;
 open Expand;;
 open Espresso;;
 open Tautology;;
+open Complement
 
 
 let _ = 
@@ -27,7 +28,7 @@ let _ =
   print_newline();
   print_cube (vect_weakly_unate cover2);
   print_newline ();
-  let off_cover = sop_complement cover2 in
+  let off_cover = sop_complement cover in
   print_string "off_set : ";
   print_newline();
   print_sop off_cover;

@@ -51,6 +51,9 @@ let list_map_n (f:'a list -> 'b) (l:'a list list) : 'b list =
       aux r ((f t)::accu)
   in aux l []
 
+let transpose (matrix:'a list list) : 'a list list = 
+  list_map_n (fun col -> col) matrix
+
 
 let literal_is_empty (v:literal_t) : bool =
   not (List.exists ((=)true) v)
@@ -201,4 +204,10 @@ let sop_consensus (sop1:sop_t) (sop2:sop_t) : sop_t =
   List.map (fun c1 -> List.map (cube_consensus c1) sop2) |>
   List.flatten |>
   List.flatten (* TODO: merge ? *)
+
+
+let sop_cost (sop:sop_t) = 
+  List.length sop
+
+
 

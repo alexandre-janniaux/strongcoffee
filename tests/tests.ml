@@ -4,6 +4,7 @@ open Espresso
 open Partition
 open Tautology
 open MVDebug
+open Complement
 
 
 (* This function and sop_contains must be tested for validity *)
