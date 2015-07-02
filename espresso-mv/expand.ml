@@ -1,4 +1,6 @@
+open Format
 open MultipleValued
+open Covering
 
 let cube_lower cube lower = 
   List.map2 
@@ -30,45 +32,54 @@ let remove_essential_parts cube off_set free =
 
 
 let remove_feasibly_covered on_set off_set cube raise_cube free =
-  let rec aux cube free_cube raise_cube =
+  let rec aux cube free_cube raise_cube on_set =
     let covered_cubes, others = 
       List.partition (fun f -> 
         let p = cube_supercube cube f in 
-        not(List.exists (fun x -> cube_distance p x >= 1) off_set))
+        not(List.exists (fun x -> cube_distance p x >= 1) off_set) && p <> cube)
         on_set 
     in
 
-    let rec score_attrib set accu = 
-      match set with
-      | x::r -> 
-        let supercube = cube_supercube cube x in
-        let score = list_count ((=)true) (List.map (fun y -> cube_contains supercube y) covered_cubes) in 
-        score_attrib r ((x,score)::accu)
-      | [] -> accu
+    let func x = let supercube = cube_supercube cube x in 
+      list_count ((=)true) (List.map (fun y -> cube_contains supercube y) covered_cubes)
     in
 
-    let map_score = score_attrib on_set [] |> List.sort (fun (_,score1) (_,score2) -> compare score1 score2)in
+    let map_score = List.map func on_set in
+
     if map_score = [] then
       off_set, free_cube, raise_cube
+    
     else begin
-      let best = fst(List.hd map_score) in
+      let best_id = select_score (>) map_score in
+      let best, set' = list_pop on_set best_id in
+
       let free_cube = cube_lower free_cube best in
       let raise_cube = cube_upper raise_cube best in
       let new_cube = cube_supercube best cube in
-      aux new_cube free_cube raise_cube  
-    end
-  in aux cube free raise_cube
 
-  
+      if free_cube |>  List.filter (literal_is_empty) = [] then
+        off_set, free_cube, raise_cube
+      else
+        aux new_cube free_cube raise_cube set'
+    end
+  in aux cube free raise_cube on_set
+
+
+
 let expand_most_frequent free_cube set =
   free_cube
 
-let expand_minimum_covering off_set raise_cube free_cube = 
-  
+
+
+let expand_minimum_covering off_set raise_cube free_cube =   
   raise_cube
+
+
 
 let expand_minimum_covering_random off_set raise_cube free_cube = 
   free_cube
+
+
 
 let cube_expand cube on_set off_set = 
   let free_cube = List.map (List.map not) cube in
@@ -92,7 +103,7 @@ let sop_expand set off_set =
   let rec aux set accu = 
     match set with
     | [] -> accu
-    | cube::r -> aux r ((cube_expand cube set off_set)::accu)
+    | cube::r -> aux r ((cube_expand cube r off_set)::accu)
   in aux set []
 		      
 		      

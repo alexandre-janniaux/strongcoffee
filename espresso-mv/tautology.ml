@@ -36,6 +36,7 @@ let vect_weakly_unate (sop:sop_t) : cube_t =
 let is_weakly_unate (sop:sop_t) : bool = 
   not(List.exists (fun l -> not (List.exists ((=)true) l)) (vect_weakly_unate sop)) 
 
+
 (* 
  * Check if sop is a tautology (i.e = 1 for any evaluation)
  * TODO: half-tail recursive

@@ -33,6 +33,9 @@ let list_count f l =
 let list_sum l =
   List.fold_left (fun a x -> x+a) 0 l
 
+let list_sumf l =
+  List.fold_left (fun a x -> x+.a) 0. l
+
 let list_enumerate f (l:'a list) = 
   let rec aux l i = 
     match l with
@@ -88,46 +91,6 @@ let make_universe (literal:literal_t) : literal_t =
     
 let make_empty (literal:literal_t) : literal_t =
   List.map (fun x -> false) literal
-    
-let cube_cofactor (c1:cube_t) (c2:cube_t) =
-  (*if cube_intersect c1 c2 |> cube_is_empty then
-    List.map (List.map (fun y -> false)) c1
-    else*) 
-  List.map2 (
-    List.map2 (fun a b -> a || (not b)))
-    c1 c2
-    
-    
-let sop_cofactor (sop:sop_t) (c:cube_t) : sop_t =
-  List.map (fun cube -> cube_cofactor cube c) sop  
-      
-  
-let literal_complement (literal:literal_t) : literal_t =
-  List.map (fun x -> not x) literal
-
-    
-(* Loi de De Morgan appliqué au produit des littéraux *)
-let cube_complement (cube:cube_t) : sop_t =
-  let rec aux l previous accu =
-    match l with
-    | x::r -> aux r (previous@[make_universe x]) ((previous@[literal_complement x]@(List.map make_universe r))::accu)
-    | _ -> accu
-  in aux cube [] []
-
-
-let literal_supercube (x1:literal_t) (x2:literal_t) : literal_t =
-  List.map2 (fun x y -> x || y) x1 x2
-
-
-let cube_supercube (c1:cube_t) (c2:cube_t) : cube_t =
-  List.map2 literal_supercube c1 c2
-
-
-let sop_supercube (sop:sop_t) : cube_t = match sop with
-| [x] -> x
-| x::t -> List.fold_left cube_supercube x t
-| [] -> []
-
 
 let literal_contains (x_in:literal_t) (x:literal_t) : bool =
   not(List.exists2 (fun x y -> not x && y) x_in x)
@@ -158,7 +121,9 @@ let sop_filter_double (sop:sop_t) : sop_t =
   let rec aux sop accu = match sop with 
     | x::r -> if List.mem x r then aux r accu else aux r (x::accu)
     | [] -> accu
-  in aux sop []
+  in aux sop []    
+
+
 
 let literal_intersect (x1:literal_t) (x2:literal_t) : literal_t =
   List.map2 (fun x y -> x && y) x1 x2
@@ -174,11 +139,58 @@ let sop_intersect (s1:sop_t) (s2:sop_t) : sop_t =
     List.map (cube_intersect c1) s2
   ) s1 |> List.flatten |> sop_filter |> sop_filter_double |> sop_filter2
 
-    
+
+
 let cube_distance (c1:cube_t) (c2:cube_t) : int =
   let r = cube_intersect c1 c2 in
   list_count literal_is_empty r
 
+
+let cube_cofactor (c1:cube_t) (c2:cube_t) =
+  if cube_distance c1 c2 <> 0 then
+    List.map (List.map (fun y -> false)) c1
+  else
+  List.map2 (
+    List.map2 (fun a b -> a || (not b)))
+    c1 c2
+    
+    
+let sop_cofactor (sop:sop_t) (c:cube_t) : sop_t =
+  List.map (fun cube -> cube_cofactor cube c) sop |> sop_filter |> sop_filter_double
+      
+  
+let literal_complement (literal:literal_t) : literal_t =
+  List.map (fun x -> not x) literal
+
+    
+(* Loi de De Morgan appliqué au produit des littéraux *)
+let cube_complement (cube:cube_t) : sop_t =
+  let rec aux l previous accu =
+    match l with
+    | x::r -> aux r (previous@[make_universe x]) ((previous@[literal_complement x]@(List.map make_universe r))::accu)
+    | _ -> accu
+  in aux cube [] [] |> sop_filter
+
+
+let literal_supercube (x1:literal_t) (x2:literal_t) : literal_t =
+  List.map2 (fun x y -> x || y) x1 x2
+
+
+let cube_supercube (c1:cube_t) (c2:cube_t) : cube_t =
+  if cube_is_empty c1 then 
+    c2
+  else if cube_is_empty c2 then
+    c1
+  else
+    List.map2 literal_supercube c1 c2
+
+
+let sop_supercube (sop:sop_t) : cube_t = match sop with
+| [x] -> x
+| x::t -> List.fold_left cube_supercube x t
+| [] -> []
+
+    
     
 let cube_diff (c1:cube_t) (c2:cube_t) : cube_t = 
   List.map2 

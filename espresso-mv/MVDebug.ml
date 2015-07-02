@@ -33,4 +33,7 @@ let cube_from_text txt =
     List.map (fun x -> if x='1' then true else false) t) 
     (List.map explode vars)
 
+let debug location txt = 
+  print_string ("[DEBUG:" ^ location ^ "] : " ^ txt);
+  print_newline ();
 

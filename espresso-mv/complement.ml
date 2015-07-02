@@ -96,27 +96,3 @@ let sop_essentials (on_set:cube_t list) (dc_set:cube_t list) : cube_t list =
   List.fold_left f [] on_set
   
 
-
-		       
-  
-(*let espresso_mv on_set dc_set model = 
-  let union_set = list_union on_set dc_set in
-  let off_set = 
-    if union_set <> [] then sop_complement union_set (* return Null cover ? *)
-    else make_universe model
-  in
-  let expanded = sop_irredundant (cover_expand on_set off_set) dc_set in
-  let essentials = cover_find_essentials (expanded dc_set) in
-  let cover = cover_difference expanded essentials in
-  let forget = cover_union dc_set essentials in
-
-  let rec aux cover = 
-    let c = cover_cost cover in
-    let new_cover = irredundant (expand (reduce cover dc_set) off_set) dc_cover in
-    if cost new_cover > c then aux new_cover
-    else new_cover
-  in 
-  
-  let new_cover = aux cover in
-
-*)

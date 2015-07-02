@@ -16,13 +16,35 @@ type espresso_config_t = {
 
 let espresso_mv on_set dc_set espresso_config = 
   let union_set = list_union on_set dc_set in
-  let off_set = sop_complement union_set
+  debug "espresso" "Début de l'algorithme espresso sur :";
+  print_sop union_set;
+
+  let off_set = sop_complement union_set in
     (*if union_set <> [] then sop_complement union_set (* return Null cover ? *)
     else make_universe model*)
-  in
-  let expanded = sop_irredundant (sop_expand on_set off_set) dc_set in
-  let essentials = sop_essentials expanded dc_set in
-  let cover = expanded in (*sop_difference expanded essentials in*)
+  debug "espresso" "calcul du complementaire : ";
+  print_sop off_set;
+
+  (*
+   * Première expansion
+   *)
+  let set = sop_expand on_set off_set in
+  debug "espresso" "expansion n°1";
+  print_sop set;
+
+  (*
+   * Suppression des premières irredondances
+   *)
+  let set = sop_irredundant set dc_set in
+  debug "espresso" "irredondance n°1";
+  print_sop set;
+
+  (*
+   * On récupère les éléments essentiels
+   *)
+  let essentials = sop_essentials set dc_set in
+
+  let cover = set in (*sop_difference expanded essentials in*)
   let forget = list_union dc_set essentials in
 
   let rec aux cover = 
