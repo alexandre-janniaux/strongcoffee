@@ -97,7 +97,7 @@ let literal_contains (x_in:literal_t) (x:literal_t) : bool =
 
     
 let cube_contains (container:cube_t) (containee:cube_t) : bool =
-  not(List.exists2 literal_contains container containee)
+  not(List.exists2 (fun x y-> not(literal_contains x y)) container containee)
     
 
 let sop_filter2 set =

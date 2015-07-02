@@ -16,14 +16,18 @@ type espresso_config_t = {
 
 let espresso_mv on_set dc_set espresso_config = 
   let union_set = list_union on_set dc_set in
-  debug "espresso" "Début de l'algorithme espresso sur :";
-  print_sop union_set;
+  debug "espresso" "Début de l'algorithme espresso sur (on/dc):";
+  print_sop on_set;
+  print_sop dc_set;
 
   let off_set = sop_complement union_set in
     (*if union_set <> [] then sop_complement union_set (* return Null cover ? *)
     else make_universe model*)
   debug "espresso" "calcul du complementaire : ";
   print_sop off_set;
+
+  let total = list_union union_set off_set in
+  if not (is_tautology total) then debug "espresso" "ATTENTION : on + off + dc != 1" else debug "espresso" "complémentaire OK";
 
   (*
    * Première expansion

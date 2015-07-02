@@ -14,8 +14,10 @@ let assert_cover_is (cov1:sop_t) (cov2:sop_t) =
   assert_equal false (List.exists (f cov1) cov2)
   
 
-
-
+let sop_check sop1 sop2 =
+  let f s x = not @@ sop_contains s x in
+  not (List.exists (f sop2) sop1) && not (List.exists (f sop1) sop2)
+ 
 
 let l1 = [1;2;3;4] and l2 = [3;4;5;6] and l_count = [1;1;2;1;2;1]
 
@@ -81,11 +83,17 @@ let test_cube_intersect () =
   assert_equal (cube_intersect c1 c2) (cube_intersect c2 c1)
 
 let test_sop_intersect () =
-  let s1 = [ [[false;true];[true;true]]; [[true;true];[false;true]] ]
-  and s2 = [ [[false;true];[true;true]] ]
-  and s3 = [ [[true;false];[false;true]]; [[false;true];[true;false]] ] in
-  assert_equal [] (sop_intersect s1 s2);
-  assert_equal [] (sop_intersect s1 s3)
+  let s1 = sop_from_text ("10 11" :: "11 01" :: [])
+  and s2 = sop_from_text ("01 11" :: [])
+  and s3 = sop_from_text ("10 01" :: "01 10" :: []) in
+  assert_equal 
+    ~msg: "L'intersection est correcte."
+    true 
+    (sop_check (sop_intersect s1 s2) (sop_from_text ("01 01"::[])));
+  assert_equal
+    ~msg: "L'intersection ne comprend pas les termes vides."
+    false
+    (sop_intersect s1 s3 |> List.exists cube_is_empty)
     
 let test_literal_supercube () =
   let x1 = [true;false]
@@ -97,7 +105,22 @@ let test_literal_supercube () =
   assert_equal [true;false] (literal_supercube x1 x4)
     
 let test_cube_supercube () =
-  assert_equal false true
+  let c1 = cube_from_text "1001 1010 10110"
+  and c2 = cube_from_text "1010 1010 11000" 
+  and c3 = cube_from_text "1010 1010 00000" 
+  and c4 = cube_from_text "1111 1111 11111" in 
+  assert_equal 
+    ~msg: "L'opération supercube est bien définie."
+    (cube_from_text "1011 1010 11110")
+    (cube_supercube c1 c2);
+  assert_equal
+    ~msg: "Le supercube d'un cube et du vide donne le cube."
+    c1
+    (cube_supercube c1 c3);
+  assert_equal
+    ~msg: "Le supercube d'un cube et du tout donne le tout."
+    c4
+    (cube_supercube c1 c4)
 
 let test_literal_contains () =
   let x1 = [false;true;true]
@@ -108,34 +131,71 @@ let test_literal_contains () =
 
 
 let test_cube_cofactor () =
-  let c1 = [ [false;true;false]; [true;false;true] ]
-  and c2 = [ [false;false;true]; [true;false;true] ] in
-  assert_equal [] (cube_cofactor c1 c2)
-    
-    
-    
-let test_cube_contains () =
-  let c1 = []
-  and c2 = [] in
-  assert_equal true (cube_contains c1 c2)
+  let c1 = cube_from_text "010 101"
+  and c2 = cube_from_text "011 101" 
+  and c3 = cube_from_text "001 101" in 
+  assert_equal 
+    ~printer: (cube_to_string)
+    ~msg: "cofactoring two non disjoint cube works."
+    (cube_from_text "110 111") 
+    (cube_cofactor c1 c2);
+  assert_equal
+    ~printer: (cube_to_string)
+    ~msg: "cofactoring a cube with a disjoint cube gives an empty cube."
+    (cube_from_text "000 000")
+    (cube_cofactor c1 c3);
+  assert_equal
+    ~printer: (cube_to_string)
+    ~msg: "cofactoring a cube with itself gives a full cube."
+    (cube_from_text "111 111")
+    (cube_cofactor c3 c3)
+
     
 let test_is_not_tautology_col () =
-  let sop =
-    List.map cube_from_text 
-      [
-        "101 100";
-        "100 001";
-      ]
-  in
-  assert_equal true (is_not_tautology_col sop)
+  let sop = List.map cube_from_text 
+              ( "101 100" ::
+                "100 001" :: []) in
+  let sop' = List.map cube_from_text
+               ( "110 101" ::
+                 "101 100" ::
+                 "000 011" :: []) in
+  assert_equal 
+    ~msg: "reconnait une colonne de zéros."
+    true 
+    (is_not_tautology_col sop);
+  assert_equal
+    ~msg: "reconnait qu'il n'y a pas de colonne de zéros."
+    false
+    (is_not_tautology_col sop')
+
     
 
 let test_cube_distance () =
-  todo "make a cube distance test"
+  let c1 = cube_from_text "111010 100110 100110" 
+  and c2 = cube_from_text "101010 100010 011000"
+  and c3 = cube_from_text "001000 100000 100000" in
+  assert_equal
+    ~msg: "cube_distance calcule une distance de 1."
+    1
+    (cube_distance c1 c2);
+  assert_equal
+    ~msg: "cube distance calcule une distance de 0."
+    0
+    (cube_distance c1 c3)
 
 let test_cube_contains () =
-  todo ""
-    
+  let c1 = cube_from_text "110110 10110 1011001" 
+  and c2 = cube_from_text "100000 00110 1000001"
+  and c3 = cube_from_text "111110 10110 1011001" in
+  assert_equal
+    ~msg: "c1 contient c2"
+    true
+    (cube_contains c1 c2);
+  assert_equal
+    ~msg: "c1 ne contient pas c3"
+    false
+    (cube_contains c1 c3)
+
 
 let test_sop_contains () =
   todo "make a sop_contains test"
@@ -192,6 +252,7 @@ let test_fixture = "Espresso" >:::
     "sop_contains" >:: test_sop_contains;
     "cube_distance" >:: test_cube_distance;
     "cube_sharp" >:: test_cube_sharp;
+    "cube_cofactor" >:: test_cube_cofactor;
 
 
     "is_not_tautology_col" >:: test_is_not_tautology_col;

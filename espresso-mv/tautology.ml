@@ -18,12 +18,9 @@ let vect_or_col (sop:sop_t) : cube_t =
 
 (* Check whether sop has a variable never triggered or not *)
 let is_not_tautology_col (sop:sop_t) : bool =
-  not (
-    sop |> 
-    list_map_n (list_map_n (List.exists ((=)true))) |>
-    List.map (List.exists ((=)true)) |>
-    List.exists ((=)true)
-  )
+  let tab = list_map_n (list_map_n (fun list_val -> not (List.exists ((=)true) list_val))) sop in
+  List.exists (List.exists ((=)true)) tab
+
 
 let vect_weakly_unate (sop:sop_t) : cube_t = 
   list_map_n (fun var_list ->
@@ -33,6 +30,10 @@ let vect_weakly_unate (sop:sop_t) : cube_t =
     end
   ) sop  
 
+(*
+ *    Vérifie qu'une fonction est bien weakly unate en chacune
+ *    de ses variables.
+ *)
 let is_weakly_unate (sop:sop_t) : bool = 
   not(List.exists (fun l -> not (List.exists ((=)true) l)) (vect_weakly_unate sop)) 
 
