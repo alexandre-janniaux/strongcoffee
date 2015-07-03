@@ -137,7 +137,7 @@ let cube_intersect (c1:cube_t) (c2:cube_t) : cube_t =
 let sop_intersect (s1:sop_t) (s2:sop_t) : sop_t = 
   List.map (fun c1 ->
     List.map (cube_intersect c1) s2
-  ) s1 |> List.flatten |> sop_filter |> sop_filter_double |> sop_filter2
+  ) s1 |> List.flatten (*|> sop_filter |> sop_filter_double |> sop_filter2*)
 
 
 
@@ -156,7 +156,7 @@ let cube_cofactor (c1:cube_t) (c2:cube_t) =
     
     
 let sop_cofactor (sop:sop_t) (c:cube_t) : sop_t =
-  List.map (fun cube -> cube_cofactor cube c) sop |> sop_filter |> sop_filter_double
+  List.map (fun cube -> cube_cofactor cube c) sop (*|> sop_filter |> sop_filter_double*)
       
   
 let literal_complement (literal:literal_t) : literal_t =

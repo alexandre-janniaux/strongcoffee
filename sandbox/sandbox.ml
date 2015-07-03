@@ -23,7 +23,7 @@ let _ =
     "10 10 01" ::
     []) in
     print_sop cover;
-  print_sop (transpose cover);
+  print_sop (list_map_n (list_map_n (fun l->l)) cover);
   let dc = [cube_from_text "01 01 10"] in
   let cover' = espresso_mv cover dc {nb_var = 6; var_size = [2;2;2;2;3;5]} in
   print_sop cover'

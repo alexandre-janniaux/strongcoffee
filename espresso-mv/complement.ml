@@ -137,14 +137,10 @@ let rec sop_complement (sop:sop_t) =
           (*
              *    TODO: Les simplification du cofacteur sont ils obligatoires ? 
             *)
-            let cof1, cof2 = sop_cofactor sop p1 |> simple_expand |> sop_filter |> sop_filter_double |> sop_filter2, 
-                             sop_cofactor sop p2 |> simple_expand |> sop_filter |> sop_filter_double |> sop_filter2 in
+            let cof1, cof2 = sop_cofactor sop p1 (*|> simple_expand |> sop_filter |> sop_filter_double |> sop_filter2*), 
+                             sop_cofactor sop p2 (*|> simple_expand |> sop_filter |> sop_filter_double |> sop_filter2*) in
             begin
-              debug "complement" "Les cofacteurs sont : ";
-              print_sop cof1; print_newline();
-              print_sop cof2; print_newline();
               let result = sop_merge_fast p1 (sop_complement cof1) p2 (sop_complement cof2) in
-              debug "complement" "résultat apres merge:"; print_sop result;
               result
             end
 

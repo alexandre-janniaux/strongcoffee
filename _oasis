@@ -29,6 +29,12 @@ Executable "sandbox"
   BuildDepends: espresso, unix, str
   Install: false
 
+Executable "quine"
+  Path: quine-mc
+  MainIs: expand.ml
+  BuildDepends: str
+  Install: false
+
 Test "unittests"
   Run$: flag(tests) 
   TestTools: unittests

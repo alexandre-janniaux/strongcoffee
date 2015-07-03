@@ -84,7 +84,6 @@ let rec sop_supercube_complement (sop:sop_t) : cube_t =
       List.fold_left (fun a x -> cube_intersect a (sop_supercube (cube_complement x))) first (List.tl sop)
 
     end else begin
-      debug "reduce" "Pas de colonne de 0."; 
       (*
        *  Sinon, on va séparer le cube en prenant une partition c,c'
        *  et on applique "supercube(F') = supercube( c*supercube(F'_c) + c'*supercube(F'_c') )"

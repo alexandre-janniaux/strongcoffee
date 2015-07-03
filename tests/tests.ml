@@ -229,10 +229,83 @@ let test_partition () =
     ~msg:"L'union des élements d'une partition est une tautologie"
     true 
     (is_tautology [c1;c2]) (* TODO : other check (taugology use partition) *)
+
+
+let test_is_tautology_row () = 
+  let sop1 = sop_from_text ("11 11 111"::"00 00 000"::[])
+  and sop2 = sop_from_text ("11 11 110"::"11 01 111"::[]) in
+  assert_equal
+    ~msg: "sop1 est une tautologie triviale."
+    true
+    (is_tautology_row sop1);
+  assert_equal
+    ~msg: "sop2 n'est pas une tautology triviale"
+    false
+    (is_tautology_row sop2)
       
-    
+
+let test_vect_or_col () =
+  let sop = sop_from_text ("101 101 101"::"111 010 101"::[]) in
+  assert_equal
+    ~printer: cube_to_string
+    ~msg: "vect_or_col fait un or sur les colonnes"
+    (cube_from_text "111 111 101")
+    (vect_or_col sop)
+
+
+let test_vect_weakly_unate () =
+  let sop = sop_from_text
+      ("101 111 101"::
+       "101 101 111"::
+       "111 101 100"::[]) in
+  assert_equal
+    ~printer: cube_to_string
+    ~msg: "vect_weakly_unate indique en quelle variable et pour quel colonne la fonction est weakly unate."
+    (cube_from_text "010 010 010")
+    (vect_weakly_unate sop)
+
+
+let test_is_weakly_unate () =
+  let sop1 = sop_from_text
+      ("101 111 101"::
+       "101 101 111"::
+       "111 101 100"::[]) 
+  and sop2 = sop_from_text
+      ("110 111 101"::
+       "101 101 111"::
+       "111 101 100"::[]) in
+  assert_equal
+    ~msg: "Les fonctions weakly unate sont reconnus."
+    true
+    (is_weakly_unate sop1);
+  assert_equal
+    ~msg:"Une fonction qui n'est pas weakly unate en chacune de ses variables n'est pas reconnue."
+    false
+    (is_weakly_unate sop2)
+
+
+(* TODO: vérifier tous les cas *)
+let test_is_tautology () =
+  let sop1 = sop_from_text
+      (""::[])
+  and sop2 = sop_from_text
+      (""::[])
+  in 
+  assert_equal
+    ~msg: "Une tautologie est bien reconnue comme telle."
+    true
+    (is_tautology sop1);
+  assert_equal
+    ~msg: "Une non-tautologie est bien écartée."
+    false
+    (is_tautology sop2)
+
+
+
+
 let test_fixture = "Espresso" >:::
-  [
+                   [
+    (* MULTIPLE VALUED *)
     (*"list_union" >:: test_list_union;*)
     "list_count" >:: test_list_count;
     "list_sum" >:: test_list_sum;
@@ -254,9 +327,16 @@ let test_fixture = "Espresso" >:::
     "cube_sharp" >:: test_cube_sharp;
     "cube_cofactor" >:: test_cube_cofactor;
 
+    (* PARTITION *)
+    "partition" >:: test_partition;
 
+    (* TAUTOLOGY *)
+    "is_tautology_row" >:: test_is_tautology_row;
+    "vect_or_col" >:: test_vect_or_col;
     "is_not_tautology_col" >:: test_is_not_tautology_col;
-    "partition" >:: test_partition
+    "vect_weakly_unate" >:: test_vect_weakly_unate;
+    "is_weakly_unate" >:: test_is_weakly_unate;
+    "is_tautology" >:: test_is_tautology
   ]
 
 let _ =

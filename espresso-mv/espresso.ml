@@ -47,9 +47,11 @@ let espresso_mv on_set dc_set espresso_config =
    * On récupère les éléments essentiels
    *)
   let essentials = sop_essentials set dc_set in
+  debug "essential" "Elements essentiels récupérés : ";
+  print_sop essentials;
 
   let cover = set in (*sop_difference expanded essentials in*)
-  let forget = list_union dc_set essentials in
+  (*let forget = list_union dc_set essentials in*)
 
   let rec aux cover = 
     let c = sop_cost cover in
