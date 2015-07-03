@@ -112,10 +112,10 @@ let sop_cost sop =
   list_sum (fun x->x) 
     (List.map (list_count ((<>)(true,true))) sop)
 
-let select_score (scores:int list) = 
+let select_score f_compare (scores:int list) = 
   let rec aux l i j m = 
     match l with 
-    | x::r when x > m -> aux r (i+1) i x
+    | x::r when f_compare x m -> aux r (i+1) i x
     | x::r -> aux r (i+1) j m 
     | [] -> j
   in aux scores 0 0 (List.hd scores)

@@ -2,6 +2,8 @@ open Format
 open Str
 open Read
 open Tools
+open Benchmark
+
 
 let merge (c1:cubeb_t) (set:sopb_t) = 
   let rec aux set accu = 
@@ -21,6 +23,7 @@ let merge (c1:cubeb_t) (set:sopb_t) =
 
 
 let expand_step (set:sopb_t) = 
+  let bench = start_record "expand_step" ("set_length="^(istr@@List.length set)) in
   let rec aux set accu prime = 
     match set with
     | x::r -> 
@@ -28,15 +31,17 @@ let expand_step (set:sopb_t) =
       if merge_set = [x] then aux r accu (x::prime) 
       else aux r (merge_set@accu) prime
     | [] -> accu, prime
-  in aux set [] []
+  in 
+  aux set [] [] =@ bench
 
 
 let expand (set:sopb_t) : sopb_t = 
+  let bench = start_record "expand" "" in
   let rec aux set accu = 
     let set', prime = expand_step set in
     if set'=[] then prime@accu
     else aux set' (prime@accu)
-  in aux set []
+  in aux set [] =@ bench
 
 
 let print_matrix mat = 
@@ -81,6 +86,7 @@ let essentials mat set =
    *    il n'y a qu'une seule possibilité de couvrir le
    *    terme.
    *)
+  let bench = start_record "essentials" "" in
   let rec aux mat set accu essentials = 
     match mat with 
     | row::r -> 
@@ -103,7 +109,7 @@ let essentials mat set =
     | [] -> 
       (* Il n'y a pas besoin de renverser les colonnes *)
       essentials, accu, set 
-  in aux mat set [] []
+  in aux mat set [] [] =@ bench
 
 
 let row_contains col1 col2 = 
@@ -117,6 +123,7 @@ let row_dominance mat =
    *    si une telle ligne existe c'est qu'un des implicants est plus grand 
    *    que les autres, et va forcément apparaitre dans la solution.
    *)
+  let bench = start_record "row_dominance" "" in
   let rec aux mat accu = 
     match mat with
     | row::r -> 
@@ -127,7 +134,7 @@ let row_dominance mat =
     | [] -> 
       (* L'ordre n'a pas d'importance, on a manipulé les lignes *)
       accu
-  in aux mat []
+  in aux mat [] =@ bench
 
 
 
@@ -137,6 +144,7 @@ let col_dominance (mat:bmatrix_t) (set:sopb_t)  : bmatrix_t*sopb_t=
    *    plus petit : clairement, ci C_1 est contenu dans C_2
    *    alors tous les termes de C_1 sont couverts par C_2
    *)
+  let bench = start_record "col_dominance" "" in 
   let mat' = transpose mat in
   let rec aux mat set accu_m accu_s = 
     match mat, set with 
@@ -157,25 +165,29 @@ let col_dominance (mat:bmatrix_t) (set:sopb_t)  : bmatrix_t*sopb_t=
       (* Si on a pas le même nombre de colonne que d'implicant, c'est qu'on en a
        * perdu en route et qu'il y a un défaut de fonctionnement *)
       failwith "[col_dominance] Erreur : le nombre de colonne est différent du nombre d'implicant."
-  in aux mat' set [] []
+  in aux mat' set [] [] =@ bench
 
 let solve_minimum_cover mat set = 
+  let bench = start_record "solve_minimum_cover" "" in
   let rec aux mat set accu = 
     let m' = transpose mat in 
     let scores = List.map (list_count ((=)true)) m' in
 
     if List.length scores = 0 then accu else begin
-      let index = select_score scores in
+      let index = select_score (>) scores in
       let e, set' = list_pop index set in
       let mat' = List.map (fun row -> 
         let v, row' = list_pop index row in if v then [] else row'
       ) mat |> List.filter ((<>)[])
       in aux mat' set' (e::accu) 
     end
-  in aux mat set []
+  in aux mat set [] =@ bench
 
 
 let irredundant (on_set:sopb_t) (set:sopb_t) = 
+  let on_set_size = istr@@ List.length on_set
+  and set_size = istr@@ List.length set in
+  let bench = start_record "irredundant" ("on_set_size:"^on_set_size^"; set_size:"^set_size) in
   let mat = List.map (fun cube -> 
     List.map (fun implicant ->
       contains implicant cube
@@ -190,7 +202,8 @@ let irredundant (on_set:sopb_t) (set:sopb_t) =
     match essential with
     | [] -> accu @ (solve_minimum_cover mat set)
     | _ -> aux mat' set' (essential@accu)
-  in aux mat set []
+  in aux mat set [] =@ bench
+       
 
 
 let sop_verify (on_set:sopb_t) (set:sopb_t) =

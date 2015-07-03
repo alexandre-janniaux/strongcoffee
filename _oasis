@@ -31,7 +31,7 @@ Executable "sandbox"
 
 Library "quinemc"
   Path: quine-mc
-  Modules: Expand,Read,Tools,Covering
+  Modules: Expand,Read,Tools,Covering,Benchmark
   BuildDepends: str                                        
 
 Executable "quine"
