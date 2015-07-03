@@ -1,3 +1,5 @@
 S ./espresso-mv/
+S ./quine-mc/
 B ./_build/espresso-mv/             
+B ./_build/quine-mc/
 PKG oUnit

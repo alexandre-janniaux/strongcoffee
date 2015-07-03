@@ -29,10 +29,15 @@ Executable "sandbox"
   BuildDepends: espresso, unix, str
   Install: false
 
-Executable "quine"
+Library "quinemc"
   Path: quine-mc
-  MainIs: expand.ml
-  BuildDepends: str
+  Modules: Expand,Read,Tools,Covering
+  BuildDepends: str                                        
+
+Executable "quine"
+  Path: quine-executable
+  MainIs: quine.ml
+  BuildDepends: str, quinemc
   Install: false
 
 Test "unittests"
