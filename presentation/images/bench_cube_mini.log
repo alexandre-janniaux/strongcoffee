@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99991 (TeX Live 2014/Arch Linux) (preloaded format=xelatex 2015.5.29)  4 JUL 2015 21:14
+This is XeTeX, Version 3.14159265-2.6-0.99991 (TeX Live 2014/Arch Linux) (preloaded format=xelatex 2015.5.29)  4 JUL 2015 22:46
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -215,32 +215,22 @@ you forgot something else, as in `\hbox{$x}'. In such cases
 the way to recover is to insert both the forgotten and the
 deleted material, e.g., by typing `I$}'.
 
-! Undefined control sequence.
-l.10 \addplot
-              {x};
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
 ! Missing $ inserted.
 <inserted text> 
                 $
-l.11 
+l.10 
      
 I've inserted a begin-math/end-math symbol since I think
 you left one out. Proceed, with fingers crossed.
 
 
-Overfull \hbox (20.0pt too wide) in paragraph at lines 9--11
+Overfull \hbox (20.0pt too wide) in paragraph at lines 9--10
 []
  []
 
 
-Overfull \hbox (69.0521pt too wide) in paragraph at lines 9--11
-[]\OML/cmm/m/it/10 ube[]ini:dat\OT1/cmr/m/n/10 ; \OML/cmm/m/it/10 x\OT1/cmr/m/n
-/10 ;$ 
+Overfull \hbox (58.89241pt too wide) in paragraph at lines 9--10
+[]\OML/cmm/m/it/10 ube[]ini:dat\OT1/cmr/m/n/10 ;$ 
  []
 
 
@@ -250,7 +240,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.12 \end{axis}
+l.11 \end{axis}
                
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -259,7 +249,7 @@ or  <return>  to continue without it.
 ! Missing } inserted.
 <inserted text> 
                 }
-l.12 \end{axis}
+l.11 \end{axis}
                
 I've inserted something that you may have forgotten.
 (See the <inserted text> above.)
@@ -281,5 +271,5 @@ Here is how much of TeX's memory you used:
  3436 multiletter control sequences out of 15000+600000
  3640 words of font info for 14 fonts, out of 8000000 for 9000
  1328 hyphenation exceptions out of 8191
- 18i,2n,12p,82b,60s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 18i,1n,12p,82b,60s stack positions out of 5000i,500n,10000p,200000b,80000s
 No pages of output.
