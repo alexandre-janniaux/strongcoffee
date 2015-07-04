@@ -5,6 +5,12 @@ open Tools
 open Benchmark
 
 
+(*
+ *    Tente de fusionner le cube avec chaque élément
+ *    de l'ensemble set, et renvoie les éléments
+ *    fusionnés. S'il n'y en a aucun, renvoie le 
+ *    cube.
+ *)
 let merge (c1:cubeb_t) (set:sopb_t) = 
   let rec aux set accu = 
     match set with
@@ -21,9 +27,11 @@ let merge (c1:cubeb_t) (set:sopb_t) =
     | [] -> if accu = [] then [c1] else accu
   in aux set []
 
-
+(*
+ *    Effectue une étape d'expansion entre tous les 
+ *    termes.
+ *)
 let expand_step (set:sopb_t) = 
-  let bench = start_record "expand_step" ("set_length="^(istr@@List.length set)) in
   let rec aux set accu prime = 
     match set with
     | x::r -> 
@@ -32,9 +40,14 @@ let expand_step (set:sopb_t) =
       else aux r (merge_set@accu) prime
     | [] -> accu, prime
   in 
-  aux set [] [] =@ bench
+  aux set [] []
 
 
+(*
+ *    Applique l'algorithme d'expansion
+ *    tant que tous les implicants premiers
+ *    n'ont pas été trouvés.
+ *)
 let expand (set:sopb_t) : sopb_t = 
   let bench = start_record "expand" "" in
   let rec aux set accu = 
@@ -55,6 +68,10 @@ let print_matrix mat =
   ) mat
 
 
+(*
+ *    Equivalent de List.map, mais avec un nombre de liste
+ *    arbitraire en paramètre.
+ *)
 let list_map_n (f:'a list -> 'b) (l:'a list list) : 'b list =
   let rec depile l = (List.map List.hd l, List.map List.tl l |> List.filter ((<>)[])) in
   let rec aux l accu =
@@ -64,6 +81,7 @@ let list_map_n (f:'a list -> 'b) (l:'a list list) : 'b list =
       let (t,r) = depile l in
       aux r ((f t)::accu)
   in aux l []
+
 
 let transpose (matrix:'a list list) : 'a list list = 
   list_map_n (fun col -> col) matrix
@@ -167,6 +185,10 @@ let col_dominance (mat:bmatrix_t) (set:sopb_t)  : bmatrix_t*sopb_t=
       failwith "[col_dominance] Erreur : le nombre de colonne est différent du nombre d'implicant."
   in aux mat' set [] [] =@ bench
 
+(*
+ *  Résout le problème de couverture minimale d'ensemble
+ *  étant donné la matrice de couverture.
+ *)
 let solve_minimum_cover mat set = 
   let bench = start_record "solve_minimum_cover" "" in
   let rec aux mat set accu = 
@@ -184,6 +206,10 @@ let solve_minimum_cover mat set =
   in aux mat set [] =@ bench
 
 
+(*
+ *    Cherche un sous-ensemble minimal (pas forcément le minimum)
+ *    de set qui recouvre on_set
+ *)
 let irredundant (on_set:sopb_t) (set:sopb_t) = 
   let on_set_size = istr@@ List.length on_set
   and set_size = istr@@ List.length set in
@@ -206,8 +232,11 @@ let irredundant (on_set:sopb_t) (set:sopb_t) =
        
 
 
+(*
+ *    Vérifie que chaque cube élémentaire est inclus dans 
+ *    un des cubes de l'ensemble set.
+ *)
 let sop_verify (on_set:sopb_t) (set:sopb_t) =
-
   try let cube = List.find (fun cube -> 
     not (
       List.exists (fun implicant -> contains implicant cube) set

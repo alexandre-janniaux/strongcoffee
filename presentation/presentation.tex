@@ -31,7 +31,7 @@
 \newcommand{\ensemble}[1]{{\left\lbrace{} #1 \right\rbrace{}}}
 \newcommand{\ens}[1]{{\lbrace{} #1 \rbrace{}}}
 
-
+\DeclareMathOperator{\istautology}{tautologieTest}
 
 \def\restriction#1#2{\mathchoice
               {\setbox1\hbox{${\displaystyle #1}_{\scriptstyle #2}$}
@@ -270,9 +270,9 @@
 	\end{column}
 \end{columns}
 
-\begin{tikzpicture}[scale=0.8]
-	\input{images/bench_mini_logdiff.tex}
-\end{tikzpicture}  
+%\begin{tikzpicture}[scale=0.8]
+%	\input{images/bench_mini_logdiff.tex}
+%\end{tikzpicture}  
 
 \end{frame}
 
@@ -311,33 +311,42 @@
 
 \end{frame}
 
+
+
 \begin{frame}
   \frametitle{Espresso}
 
-  \[ \bigcup_{i=1}^n c_i = 1 \implies f \equiv \bigcup_{i=1}^{n} c_i \cap \restriction{f}{c_i}\]
+	\begin{mdframed}
+  \[ \bigcup_{i=1}^n c_i = 1 \implies f \equiv \bigcup_{i=1}^{n} c_i \cap \restriction{f}{c_i} \]
+  \end{mdframed}
 
   \textbf{Atout :} Paradigme diviser pour régner
-  \par Chaque étape est divisée en plus petites.
-	
+  \par Chaque étape est divisée en plus petites, chaque partie difficile est approximée.
+  
+  \vfill\null
+  
   \textbf{Opérations :}  
   \begin{itemize}
-  \item Expansion améliorée
-  \item Élimination des redondances
-  \item Réduction des cubes
+  \item Tautologie : 
+  \[ \istautology(f) = \istautology(f_c) * \istautology(f_{\bar{c}}) \]
+  \item Expansion améliorée : tautologie et couverture minimale
+  \item Élimination des redondances : tautologie et couverture minimale
+  \item Réduction des cubes : tautologie
   \end{itemize}
-  
-  
+
   
 \end{frame}
 
 \begin{frame}
   \frametitle{Conclusion}
+  
 
   \begin{itemize}
   \item Problème difficile à résoudre de façon naïve
-  \item Intéressant : tourne autour de plusieurs grands problèmes
+  \item Seul l'utilisation des propriétés du problème permet de le résoudre
+  \item Tourne autour de plusieurs grands problèmes
   \item Très bien maitrisé aujourd'hui
-  \item D'autres applications : Arbre de décision multivalué, etc
+  \item D'autres applications : Arbres de décision binaires et multivalués, conception de mémoires et circuits FGPA ...
   \end{itemize}
 
 \end{frame}

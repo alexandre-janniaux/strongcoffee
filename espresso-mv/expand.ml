@@ -89,9 +89,8 @@ let cube_expand cube on_set off_set =
   (* STEP 1 : determination of essential parts *)
   let off_set, free_cube, raise_cube = 
     remove_essential_parts cube off_set free_cube in
-  raise_cube
 
-  (*(* STEP 2 : Detection of feasibly covered cubes *)
+  (* STEP 2 : Detection of feasibly covered cubes *)
   let off_set, free_cube, raise_cube = 
     remove_feasibly_covered on_set off_set cube raise_cube free_cube in
 
@@ -99,7 +98,7 @@ let cube_expand cube on_set off_set =
   let free_cube = expand_most_frequent free_cube on_set in
 
   (* STEP 4 : Expansion via the minimum covering problem *)
-  raise_cube *)
+  raise_cube  (* TODO *)
   
 
 let sop_expand set off_set =
