@@ -31,7 +31,7 @@
 \newcommand{\ensemble}[1]{{\left\lbrace{} #1 \right\rbrace{}}}
 \newcommand{\ens}[1]{{\lbrace{} #1 \rbrace{}}}
 
-\DeclareMathOperator{\istautology}{tautologieTest}
+\DeclareMathOperator{\istautology}{taut}
 
 \def\restriction#1#2{\mathchoice
               {\setbox1\hbox{${\displaystyle #1}_{\scriptstyle #2}$}
@@ -328,7 +328,7 @@
   \textbf{Opérations :}  
   \begin{itemize}
   \item Tautologie : 
-  \[ \istautology(f) = \istautology(f_c) * \istautology(f_{\bar{c}}) \]
+  \[ \istautology(f) = \istautology(\restriction{f}{c}) \cdot \istautology(\restriction{f}{\bar{c}}) \]
   \item Expansion améliorée : tautologie et couverture minimale
   \item Élimination des redondances : tautologie et couverture minimale
   \item Réduction des cubes : tautologie
