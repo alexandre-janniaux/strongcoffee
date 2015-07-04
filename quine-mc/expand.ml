@@ -10,11 +10,11 @@ let merge (c1:cubeb_t) (set:sopb_t) =
     match set with
     | x::r -> 
       if distance x c1 = 1 then begin 
-        print_string "Merge cube ";
+        (*print_string "Merge cube ";
         print_cube x;
         print_string " with ";
         print_cube c1;
-        print_newline();
+        print_newline();*)
         aux r (cube_or c1 x :: accu)
       end else
         aux r accu
