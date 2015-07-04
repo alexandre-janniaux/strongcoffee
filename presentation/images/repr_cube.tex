@@ -1,0 +1,57 @@
+(4,4)
+      \coordinate (A) at (0,2,2);
+      \coordinate (B) at (2,2,2);
+      \coordinate (C) at (2,0,2);
+      \coordinate (D) at (0,0,2);
+      \coordinate (E) at (0,0,0);
+      \coordinate (F) at (0,2,0);
+      \coordinate (G) at (2,2,0);
+      \coordinate (H) at (2,0,0);
+      
+      % ARETES DROITE
+      \coordinate (AB) at ($ (A)!.5!(B) $);
+      \coordinate (FG) at ($ (F)!.5!(G) $);
+      \coordinate (BC) at ($ (B)!.5!(C) $);
+      \coordinate (CD) at ($ (C)!.5!(D) $); 
+      \coordinate (FG) at ($ (F)!.5!(G) $); 
+      \coordinate (BG) at ($ (B)!.5!(G) $);
+      \coordinate (DE) at ($ (D)!.5!(E) $);
+      \coordinate (EF) at ($ (E)!.5!(F) $);      
+      \coordinate (CH) at ($ (C)!.5!(H) $);
+      
+      \coordinate (ABFG) at ($ (AB)!.5!(FG) $);
+      
+	  \draw[very thick, ->] (0,0,0) -- (3,0,0) node [right] {$\vec{a}$};
+  	  \draw[very thick, ->] (0,0,0) -- (0,3,0) node [left] {$\vec{b}$};
+  	  \draw[very thick, ->] (0,0,0) -- (0,0,3) node [below right] {$\vec{c}$};      
+      
+      
+      % ARMATURE CUBE GAUCHE
+  	  \draw[thick](G)--(F)--(A)--(B)--(G)--(H)--(C)--(D)--(A);
+  	  \draw[thick](B)--(C);
+  	  \draw[gray](H)--(E)--(F);
+ 	  \draw[gray](E)--(D);
+	  
+	  % ELLIPSES GAUCHE
+	  \draw[ultra thick] (D) circle(0.3) node [above left] {$\bar{a}\bar{b}c\quad$ };
+	  %\draw[ultra thick] (BC) ellipse (0.3 and 1.3); % Verticales
+  	  %\draw[ultra thick] (EF) ellipse (0.3 and 1.3); 
+	  %\draw[ultra thick] (CD) ellipse (1.3 and 0.3); % Horizontales
+	  %\draw[ultra thick] (FG) ellipse (1.3 and 0.3); 
+	  \draw[ultra thick, rotate around={45:(CH)}] (CH)  ellipse (1 and 0.3) node[below right] {$a\bar{b}$}; % Oblique 
+      %\draw[ultra thick, rotate around={45:(DE)}] (DE)  ellipse (1 and 0.3); % Oblique 		  	 
+      \draw[ultra thick, rotate around={35:(ABFG)}] (ABFG)  ellipse (1.7 and 1.1) node {$a$}; 
+	  	  
+	  % ELLIPSES DROIT
+	   	  
+ 	  
+ 	  % POINTS CUBE GAUCHE
+  	  \filldraw(A) circle (0.15);
+  	  \filldraw(B) circle (0.15);
+  	  \filldraw(C) circle (0.15);
+  	  \filldraw(D) circle (0.15);
+  	  \filldraw(E) circle (0.15);
+  	  \filldraw(F) circle (0.15);
+  	  \filldraw(G) circle (0.15);
+  	  \filldraw(H) circle (0.15) node[below right] {$H$};
+  	  

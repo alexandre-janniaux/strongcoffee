@@ -1,0 +1,91 @@
+(9,3)
+      \coordinate (A) at (0,2,2);
+      \coordinate (B) at (2,2,2);
+      \coordinate (C) at (2,0,2);
+      \coordinate (D) at (0,0,2);
+      \coordinate (E) at (0,0,0);
+      \coordinate (F) at (0,2,0);
+      \coordinate (G) at (2,2,0);
+      \coordinate (H) at (2,0,0);
+      
+      \coordinate (A2) at (6,2,2);
+      \coordinate (B2) at (8,2,2);
+      \coordinate (C2) at (8,0,2);
+      \coordinate (D2) at (6,0,2);
+      \coordinate (E2) at (6,0,0);
+      \coordinate (F2) at (6,2,0);
+      \coordinate (G2) at (8,2,0);
+      \coordinate (H2) at (8,0,0);
+      
+      % ARETES GAUCHE
+      \coordinate (BC) at ($ (B)!.5!(C) $);
+      \coordinate (CD) at ($ (C)!.5!(D) $); 
+      \coordinate (FG) at ($ (F)!.5!(G) $); 
+      \coordinate (BG) at ($ (B)!.5!(G) $);
+      \coordinate (DE) at ($ (D)!.5!(E) $);
+      \coordinate (EF) at ($ (E)!.5!(F) $);      
+      
+      % ARETES DROITE
+      \coordinate (BC2) at ($ (B2)!.5!(C2) $);
+      \coordinate (CD2) at ($ (C2)!.5!(D2) $); 
+      \coordinate (FG2) at ($ (F2)!.5!(G2) $); 
+      \coordinate (BG2) at ($ (B2)!.5!(G2) $);
+      \coordinate (DE2) at ($ (D2)!.5!(E2) $);
+      \coordinate (EF2) at ($ (E2)!.5!(F2) $);      
+      
+      
+      % ARMATURE CUBE GAUCHE
+  	  \draw[thick](G)--(F)--(A)--(B)--(G)--(H)--(C)--(D)--(A);
+  	  \draw[thick](B)--(C);
+  	  \draw[gray](H)--(E)--(F);
+ 	  \draw[gray](E)--(D);
+ 	  
+ 	  % ARMATURE CUBE DROIT
+ 	  \draw[thick](G2)--(F2)--(A2)--(B2)--(G2)--(H2)--(C2)--(D2)--(A2);
+  	  \draw[thick](B2)--(C2);
+  	  \draw[gray](H2)--(E2)--(F2);
+ 	  \draw[gray](E2)--(D2);
+ 	  
+	  % FLECHE
+	  \draw[ultra thick](4,1.4,2)--(5,1.4,2)--(5,1.6,2)--(5.5,1.2,2)--(5,0.8,2)--(5,1,2)--(4,1,2);
+	  
+	
+	  % ELLIPSES GAUCHE
+	  \draw[ultra thick] (BC) ellipse (0.3 and 1.3); % Verticales
+  	  \draw[ultra thick] (EF) ellipse (0.3 and 1.3); 
+	  \draw[ultra thick] (CD) ellipse (1.3 and 0.3); % Horizontales
+	  \draw[ultra thick] (FG) ellipse (1.3 and 0.3); 
+	  \draw[ultra thick, rotate around={45:(BG)}] (BG)  ellipse (1 and 0.3); % Oblique 
+      \draw[ultra thick, rotate around={45:(DE)}] (DE)  ellipse (1 and 0.3); % Oblique 		  
+	  
+	  
+	  % ELLIPSES DROITE
+	  %\draw[ultra thick] (BC2) ellipse (0.3 and 1.3); % Verticales
+  	  \draw[ultra thick] (EF2) ellipse (0.3 and 1.3); 
+	  \draw[ultra thick] (CD2) ellipse (1.3 and 0.3); % Horizontales
+	  %\draw[ultra thick] (FG2) ellipse (1.3 and 0.3); 
+	  \draw[ultra thick, rotate around={45:(BG2)}] (BG2)  ellipse (1 and 0.3); % Oblique 
+      %\draw[ultra thick, rotate around={45:(DE2)}] (DE2)  ellipse (1 and 0.3); % Oblique 		  	  
+	  	  
+	  % ELLIPSES DROIT
+	   	  
+ 	  
+ 	  % POINTS CUBE GAUCHE
+  	  \draw(A) circle (0.15);
+  	  \filldraw(B) circle (0.15);
+  	  \filldraw(C) circle (0.15);
+  	  \filldraw(D) circle (0.15);
+  	  \filldraw(E) circle (0.15);
+  	  \filldraw(F) circle (0.15);
+  	  \filldraw(G) circle (0.15);
+  	  \draw(H) circle (0.15);
+  	  
+  	  % POINTS CUBE DROIT
+  	  \draw(A2) circle (0.15);
+  	  \filldraw(B2) circle (0.15);
+  	  \filldraw(C2) circle (0.15);
+  	  \filldraw(D2) circle (0.15);
+  	  \filldraw(E2) circle (0.15);
+  	  \filldraw(F2) circle (0.15);
+  	  \filldraw(G2) circle (0.15);
+  	  \draw(H2) circle (0.15);

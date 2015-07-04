@@ -1,0 +1,11 @@
+\begin{axis}[
+	ymode=log,
+	extra tick style={grid=major},
+	title=Minimisation,
+	xlabel={nombre de variables},
+	ylabel={nombre de littéraux}]
+
+\addplot table {images/bench_literal_mini_start.dat};
+\addplot table {images/bench_literal_mini_end.dat};
+	
+\end{axis}

@@ -1,0 +1,23 @@
+\begin{axis}[
+	ymode=log,
+	extra tick style={grid=major},
+	title=Circuit premier,
+	xlabel={nombre de variables},
+	ylabel={temps ($s$)}]
+
+\addplot table {images/expand_bench.dat};
+	
+\end{axis}
+	
+%\draw plot coordinates {
+%(0,0) 
+%(1,0) 
+%(2,0) 
+%(3,0)
+%(4,0.003) 
+%(5,0.014) 
+%(6,0.07) 
+%(7,0.33) 
+%(8,1.8) 
+%(9,10.8) %};
+%(10,56.6)};

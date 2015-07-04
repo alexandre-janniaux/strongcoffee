@@ -1,0 +1,48 @@
+(4,3)
+      \coordinate (A) at (0,2,2);
+      \coordinate (B) at (2,2,2);
+      \coordinate (C) at (2,0,2);
+      \coordinate (D) at (0,0,2);
+      \coordinate (E) at (0,0,0);
+      \coordinate (F) at (0,2,0);
+      \coordinate (G) at (2,2,0);
+      \coordinate (H) at (2,0,0);
+      
+      \coordinate (I) at (4,2,2);
+      \coordinate (J) at (4,2,0);
+      \coordinate (K) at (4,0,0);
+      \coordinate (L) at (4,0,2);
+      
+        
+      
+      % ARMATURE CUBE GAUCHE
+  	  \draw[thick](G)--(F)--(A)--(B)--(G)--(H);
+  	  \draw[thick](C)--(D)--(A);
+  	  \draw[gray](H)--(C);
+  	  \draw[thick](B)--(C);
+  	  \draw[gray](K)--(H)--(E)--(F);
+ 	  \draw[gray](E)--(D);
+ 	  
+ 	  \draw[thick](I)--(J)--(K)--(L)--(I);
+ 	  \draw[thick](B)--(I);
+ 	  \draw[thick](C)--(L);
+ 	  \draw[thick](J)--(G);
+	 
+ 	  
+	  % POINTS CUBE DROIT
+  	  \draw(A) circle (0.15);
+  	  \draw(B) circle (0.15);
+  	  \draw(C) circle (0.15);
+  	  \filldraw(D) circle (0.15);
+  	  \filldraw(E) circle (0.15);
+  	  \draw(F) circle (0.15);
+  	  \filldraw(G) circle (0.15);
+  	  \draw(H) circle (0.15);
+  	  \draw(I) circle (0.15);
+  	  \draw(J) circle (0.15);
+  	  \filldraw(K) circle (0.15);
+  	  \filldraw(L) circle (0.15);
+  	  
+  	  \draw[very thick, ->] (0,0,0) -- (6,0,0) node [right] {$X_1$};
+  	  \draw[very thick, ->] (0,0,0) -- (0,3,0) node [left] {$X_2$};
+  	  \draw[very thick, ->] (0,0,0) -- (0,0,3) node [left] {$X_3$};

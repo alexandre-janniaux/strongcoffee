@@ -1,0 +1,11 @@
+\begin{axis}[
+	xmode=log,
+    ymode=log,
+	extra tick style={grid=major},
+	title=Heuristique irredondance,
+	xlabel={nombre de cubes},
+	ylabel={temps ($s$)}]
+
+\addplot table {images/irredundant_bench_heuristic_cube.dat};
+	
+\end{axis}

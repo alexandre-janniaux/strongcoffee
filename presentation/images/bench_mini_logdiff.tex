@@ -1,0 +1,11 @@
+\begin{axis}[
+	xmode=log,
+	ymode=log,
+	extra tick style={grid=major},
+	title=Minimisation,
+	xlabel={nombre de cubes initial},
+	ylabel={nombre de cubes final}]
+
+\addplot table {images/bench_mini_logdiff.dat};
+	
+\end{axis}
