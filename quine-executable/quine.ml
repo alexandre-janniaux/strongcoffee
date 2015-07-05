@@ -4,6 +4,7 @@ open Tools
 open Expand
 open Covering
 open Benchmark
+open Str
 
 
 type covering_mode = 
@@ -17,6 +18,11 @@ let solver_mode = ref Glouton
 
 let use_file = ref ""
 
+let use_dir_regex = ref ""
+
+let use_dir_from = ref 0
+
+let use_dir_to = ref 0
 
 
 let check_result sop set = 
@@ -76,6 +82,7 @@ let rec exec liste_f =
       | Backtracking -> petrick_covering sop sop' true
       | OnlyExpand -> sop'
     in
+    if not(sop_verify sop sop') then failwith "erreur : la couverture est invalide" else
     print_int (sop_cost sop);
     print_string "  ";print_int (sop_cost final_sop);print_newline();
     exec r
@@ -86,35 +93,41 @@ let set_solver (solver:string) = match solver with
   | "glouton" -> solver_mode := Glouton
   | "exact" -> solver_mode := Exact
   | "backtrack" -> solver_mode := Backtracking
-  | _ -> print_string "Solveur non reconnu. Expansion seulement.\n"; solver_mode := OnlyExpand
+  | _ -> (*print_string "Solveur non reconnu. Expansion seulement.\n"; *) solver_mode := OnlyExpand
 
 
 let speclist = [
   ("-solver", Arg.String set_solver,
    "Use the heuristic mincov solver");
 
-  ("-file", Arg.String (fun file -> use_file := file),
-   "Use a file as input")
+  ("-input", Arg.String (fun file -> use_file := file),
+   "Use a file as input");
+
+  ("-files", Arg.String (fun reg -> use_dir_regex := reg),
+   "Use a filename template, see -from and -to");
+
+  ("-from", Arg.Int (fun from -> use_dir_from := from),
+   "");
+
+  ("-to", Arg.Int (fun value -> use_dir_to := value),
+   "")
 ]
 
 
 let usage_message = ""
 
+
+let build_file_list () = 
+  let rec aux i accu = 
+    if i < !use_dir_to then 
+      aux (i+1) (Str.replace_first (Str.regexp "%i") (string_of_int i) (!use_dir_regex) :: accu)
+    else List.rev accu
+  in aux !use_dir_from []
+
 let _ = 
   Arg.parse speclist print_string usage_message;
-  if !use_file <> "" then single !use_file
-  else
-    exec [
-      "nonprime/3.txt";
-      "nonprime/4.txt";
-      "nonprime/5.txt";
-      "nonprime/6.txt";
-      "nonprime/7.txt";
-      "nonprime/8.txt";
-      "nonprime/9.txt";
-      "nonprime/10.txt";
-      "nonprime/11.txt";
-      "nonprime/12.txt";
-      "nonprime/13.txt";
-      "nonprime/14.txt"
-    ]
+
+  (*if !use_dir_regex <> "" then*)
+  let file_list = build_file_list() in
+    exec file_list
+  (*else single !use_file *)

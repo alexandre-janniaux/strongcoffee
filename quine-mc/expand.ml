@@ -92,7 +92,7 @@ let list_pop i l =
     match l with 
     | x::r when j<i -> aux r (x::accu) (j+1)
     | x::r when j=i -> (x, List.rev_append accu r)
-    | _ -> failwith "erreur non prévue"
+    | _ -> failwith "erreur non prévue avec list_pop"
   in aux l [] 0
 
 
@@ -115,12 +115,12 @@ let essentials mat set =
          *    On va pouvoir supprimer toutes les autres lignes
          *    que l'implicant essentiel couvre
          *)
-        let f l = 
+        let f accu l = 
           let v, row = list_pop index l in 
-          if v then [] else row 
+          if v then accu else row::accu
         in 
-        let mat' =  List.map f r |> List.filter ((<>)[]) in
-        let accu' =  List.map f accu |> List.filter ((<>)[]) in 
+        let mat' =  List.rev @@ List.fold_left f [] r  in
+        let accu' =  List.rev @@ List.fold_left f [] accu in 
         aux mat' set' accu' (e::essentials)
 
       end else aux r set (row::accu) essentials
@@ -164,8 +164,10 @@ let col_dominance (mat:bmatrix_t) (set:sopb_t)  : bmatrix_t*sopb_t=
    *)
   let bench = start_record "col_dominance" "" in 
   let mat' = transpose mat in
+
   let rec aux mat set accu_m accu_s = 
     match mat, set with 
+    (*| [row], [x] -> [row], [x]*)
     | col::r, x::set' -> 
       if List.exists (fun y -> row_contains y col) r ||
          List.exists (fun y -> row_contains y col) accu_m 
@@ -178,12 +180,16 @@ let col_dominance (mat:bmatrix_t) (set:sopb_t)  : bmatrix_t*sopb_t=
     | [], [] -> 
       (* Il n'y a pa besoin de s'inquiéter de l'ordre, car les implicants et les 
        * colones ont été permutées simultanément *)
-      transpose accu_m, accu_s  
+      accu_m, accu_s  
     | _ -> 
       (* Si on a pas le même nombre de colonne que d'implicant, c'est qu'on en a
        * perdu en route et qu'il y a un défaut de fonctionnement *)
+      printf "mat_size : %i / set_size : %i\n" (List.length mat) (List.length set);
       failwith "[col_dominance] Erreur : le nombre de colonne est différent du nombre d'implicant."
-  in aux mat' set [] [] =@ bench
+
+  in 
+  let mat'', set' = aux mat' set [] [] in 
+  (transpose mat'', set') =@ bench
 
 (*
  *  Résout le problème de couverture minimale d'ensemble
@@ -223,7 +229,10 @@ let irredundant (on_set:sopb_t) (set:sopb_t) =
   let rec aux mat set accu = 
     let essential, mat', set' = essentials mat set in
     let mat' = row_dominance mat' in
-    let mat', set' = col_dominance mat' set' in
+    let mat', set' = 
+      if List.length mat' > 0 then col_dominance mat' set' 
+      else [], []
+    in
 
     match essential with
     | [] -> accu @ (solve_minimum_cover mat set)
